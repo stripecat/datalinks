@@ -28,5 +28,24 @@ Set a good password in the config-file. Open the file JSON-REQ.txt in the root a
 
 Now test that the database is filling up with songs from the station.
 
-Next up is 
+=======================
+Windows request loader
+=======================
+
+Please go to the main server for PlayIt Live. 
+
+Next up is the requestloader. It´s a Powershell script, that will check if there are any files to play and also notify the API that a song have been added to the slot. There are two slots, so every hour allows for two requests. It´s ill-adviced to try to use more than 2. Also it´s not supported, so you will have to program that yourself to make it work.
+
+Install the webserver-role on the main server for PlayIt Live. This will only be used by PlayIt Live, so it should not be set to listen on any ip-adress other than 127.0.0.1.
+
+C:\inetpub\wwwroot\ is the root path. Create the folders radio\request in the webroot.
+Copy the file requestloader.ps1 to the PIL broadcast-machine under c:\scripts\, then open it there:
+
+Set $Destination_dir to "C:\inetpub\wwwroot\radio\request".
+
+Edit the declarations to match your settings. Download the latest version of FFMPEG from here (https://www.gyan.dev/ffmpeg/builds/). Put it in the c:\scripts.
+
+Go to C:\inetpub\wwwroot\radio\request and create \templatefiles\. Put the announcing ident ("You are listening to KRUD 95.7, here is a request from a listener") under it and call it intreq.mp3.
+
+
 

@@ -21,10 +21,10 @@
 
 #----------------[ Declarations ]------------------------------------------------------
 
-$InitDir = (Get-Location).path.tostring() + "\RequestLoader" # Change this is you run the script in another structure than the directories.
+$InitDir = "c:\scripts\" # Change this if you run the script in another structure than the directories.
 
 $ffmpeg_exe = "C:\inetpub\ffmpeg.exe"
-$Destination_dir = "C:\inetpub\wwwroot\leisa-tern\request"
+$Destination_dir = "C:\inetpub\wwwroot\radio\request"
 $LogDir = $InitDir + "\Logs\"
 $Temp_dir = $InitDir + "\Temporary"
 $ReqID=$Destination_dir + "\templatefiles\intreq.mp3"
