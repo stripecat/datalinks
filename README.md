@@ -39,7 +39,7 @@ Next up is the requestloader. It´s a Powershell script, that will check if ther
 Install the webserver-role on the main server for PlayIt Live. This will only be used by PlayIt Live, so it should not be set to listen on any ip-adress other than 127.0.0.1.
 
 C:\inetpub\wwwroot\ is the root path. Create the folders radio\request in the webroot.
-Copy the file requestloader.ps1 to the PIL broadcast-machine under c:\scripts\, then open it there:
+Copy the file requestloader.ps1 (From folder called "Powershell") to the PIL broadcast-machine under c:\scripts\, then open it there:
 
 Set $Destination_dir to "C:\inetpub\wwwroot\radio\request".
 
