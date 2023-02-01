@@ -242,9 +242,9 @@ try
  
  $CheckStatus=Invoke-WebRequest $url -Method Post -Body $params -UseBasicParsing -ContentType "application/json; charset=utf-8"
 
-    $params|out-file "d:\req.txt"
-
-  $CheckStatus.Content|out-file "d:\resp.txt"
+  # For debugging purposes:
+  #$params|out-file "d:\req.txt"
+  #$CheckStatus.Content|out-file "d:\resp.txt"
 
 $CallResult=ConvertFrom-Json ($CheckStatus.Content)
 

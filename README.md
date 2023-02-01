@@ -47,5 +47,19 @@ Edit the declarations to match your settings. Download the latest version of FFM
 
 Go to C:\inetpub\wwwroot\radio\request and create \templatefiles\. Put the announcing ident ("You are listening to KRUD 95.7, here is a request from a listener") under it and call it intreq.mp3.
 
+The script needs to run once per minute. It will the do housekeeping or load the next waiting request. At start, it checks the minute. If it's 9 or 39 minutes past the hour, it will check with the API to see if there is a request to play. If the api responds with pending request, it will create a file in "C:\inetpub\wwwroot\radio\request" called slotx.wav. Requests playing a 10 past the hour are bound to "slot1" and those playing at 40 minutes past the hour are called "slot2". The file is thus either slot1.wav or slot2.wav.
+
+Next, create a scheduled task and call it "RequestLoader". Make it run the script %SystemRoot%\system32\WindowsPowerShell\v1.0\powershell.exe and this as the arguments -NoProfile -NoLogo -NonInteractive -ExecutionPolicy Bypass -File "C:\Users\Erik Zalitis Admin\Desktop\Scripts\RequestLoader.ps1" 
+
+Set it to stop if its still running after and hour. This should not happen, but rather safe than sorry.
+
+
+=======================
+PlayIt Live
+=======================
+
+
+
+
 
 
