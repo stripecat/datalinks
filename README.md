@@ -11,26 +11,78 @@ What you need
 - A Linux box (Ubuntu recommended)
 - PHP 7.2 or better
 - A virtual host to run it on.
+- A MariaDB or MySQL instance.
 - DNS-name. Recommended: api.yourdomain.com.
 - A busload of patience.
 
 How it works
 PlayIT Live will not allow you to reach its database, nor is there an API for it. This means, all data has to be exported. EZDatalinks gets its data from the "Now Playing" plugin. Everytime a song is played, the "Now playing"-plugin will send its data to EZDatalinks via the API-endpoint /radio/updatetrack/. The endpoint will add songs it does not know anything about or update the last played times for songs it knows.
 
-To install
-Import the table-file call templatedata.sql from the Github clone. This will create an empty instance. Create a user with full permissions to the database. No superdbuserprivileges needed.
+Please note: the api.domain.tld must be its own domain. It can off course be hosted on the same box as the frontend. But it needs to
+be its own VHOST in Apache or NGinx.
 
-Make sure you have a vhost under Apache2 or Nginx. Unpack the zipfile from Github. The index.htm should be in the root. Now open the config.php and configure the database-settings. The configfile is self-explanatory. Please go through the config-file and set it as needed.
+==========
+To install
+==========
+
+You will need one system running Windows for your PlayIT Live instance. It will need to have a local IIS webserver running.The request-function does NOT use it. But if you want to use another tools, PlayIT Downloader to download newscasts(https://github.com/stripecat/DownloadItLive), you need it. The rest of this instruction will assume that there is a local IIS on the PlayIT live computer.
+
+You will need another system running Linux. I have tested all this on Ubuntu 22.04. But I believe you can use any
+modern distribution. This system needs a vhost for the front and one for the api.
+
+If you have PlayIT Live running and a website for your station, you're probably already setup this way.
+
+=======================
+The Internet facing API
+=======================
+
+Import the table-file call templatedata.sql from the Github clone into MariaDB or Nginx. This will create an empty instance. Create a user with full permissions to the database. No superdbuserprivileges needed.
+
+Make sure you have a vhost under Apache2 or Nginx. Unpack the zipfile from Github. Omit the folder called "Frontend" and the file called "templatedata.sql". The index.htm should be in the root. Now open the config.php and configure the database-settings. The configfile is self-explanatory. Please go through the config-file and set it as needed.
 
 Recommendation: make sure your IDE (development console) knows about PHP. This makes it easy not to break stuff.
 
-Set a good password in the config-file. Open the file JSON-REQ.txt in the root and use it in the "Now playing"-plugin to create the caller function for the whole setup. The PlayIt live machine and the EZDataLinks do not have to be the same. I run the base plaform on Windows 11 and my original version of EZDataLinks runs on a Linux box under Hyper-V.
+Search for "/var/www/html/api.ericade.net/" in all .php-file and replace it with your own path on all files. If you're not sure what the path is, navigate to the folder that you put all the files for the api. Then type in pwd. This will give you information. I will try to fix a better solution for this in the future.
+
+Set a good password in the config-file. Open the file copy the text hereunder and use it in the "Now playing"-plugin to create the caller function for the whole setup. 
+
+{
+	"Password": "<the password you typed into the config-file>",
+	"Artist": "{{artist}}",
+	"Title": " {{title}}",
+	"Comments": "{{comments}}",
+	"Album": "{{album}}",
+	"Genre": "{{genre}}",
+	"Year": "{{year}}",
+	"Duration": "{{duration}}",
+	"OutCue": "{{outcue}}",
+	"Tags": "{{tags}}",
+	"Disabled": "{{disabled}}",
+	"Segue": "{{segue}}",
+	"Path": "{{path}}",
+	"Type": "{{type}}",
+	"Intro": "{{intro}}",
+	"CueIn": "{{cueIn}}",
+	"CueOut": "{{cueOut}}",
+	"Added": "{{added}}",
+	"Sweeper": "{{sweeper}}",
+	"NoFade": "{{nofade}}",
+	"ValidFrom": "{{validfrom}}",
+	"Expires": "{{expires}}",
+	"Guid": "{{guid}}",
+	"StationID": "1"
+}
+
+
+The PlayIt live machine and the EZDataLinks do not have to be the same. I run the base plaform on Windows 11 and my original version of EZDataLinks runs on a Linux box under Hyper-V.
 
 Now test that the database is filling up with songs from the station.
 
 =======================
 Windows request loader
 =======================
+
+Location: the server running PlayIt Live.
 
 Please go to the main server for PlayIt Live. 
 
@@ -53,13 +105,26 @@ Next, create a scheduled task and call it "RequestLoader". Make it run the scrip
 
 Set it to stop if its still running after and hour. This should not happen, but rather safe than sorry.
 
-
-=======================
+============
 PlayIt Live
-=======================
+============
 
+You need to create two "Scheduled events" in playit live. They are there to look after a requested tune. If there is no file, the events wont fire. This means that the playout will work as normal. One event should fire at 10 past the hour and the other one at 40 minutes past the hour.
 
+1. Call the first "Scheduled event" "Play request from Internet - Slot 1"
+2. Make it run daily on every hour and at 09 minutes past the hour.
+3. Click "Add action" (green plus sign in the bottom of the Scheduled event).
+4. Add action to "Insert track" and select From: File and point to the the filename C:\inetpub\wwwroot\radio\request\request1.wav.
+   Remember that this file and the whole webserver is just for PlayIt live. The API and front should run on an Internet facing server.
+5. Call the second "Scheduled event" "Play request from Internet - Slot 2"
+6. Click "Add action" (green plus sign in the bottom of the Scheduled event).
+7. Add action to "Insert track" and select From: File and point to the the filename C:\inetpub\wwwroot\radio\request\request2.wav.
 
+With this the backend is setup properly.
 
+============
+Web frontend
+============
 
+The front end needs the ticket generator and code. Those are located under the folder "Frontend" in the package.
 
