@@ -21,9 +21,9 @@ PlayIT Live will not allow you to reach its database, nor is there an API for it
 Please note: the api.domain.tld must be its own domain. It can off course be hosted on the same box as the frontend. But it needs to
 be its own VHOST in Apache or NGinx.
 
-==========
-To install
-==========
+==============
+Pre-requisites
+==============
 
 You will need one system running Windows for your PlayIT Live instance. It will need to have a local IIS webserver running.The request-function does NOT use it. But if you want to use another tools, PlayIT Downloader to download newscasts(https://github.com/stripecat/DownloadItLive), you need it. The rest of this instruction will assume that there is a local IIS on the PlayIT live computer.
 
@@ -38,13 +38,18 @@ The Internet facing API
 
 Import the table-file call templatedata.sql from the Github clone into MariaDB or Nginx. This will create an empty instance. Create a user with full permissions to the database. No superdbuserprivileges needed.
 
-Make sure you have a vhost under Apache2 or Nginx. Unpack the zipfile from Github. Omit the folder called "Frontend" and the file called "templatedata.sql". The index.htm should be in the root. Now open the config.php and configure the database-settings. The configfile is self-explanatory. Please go through the config-file and set it as needed.
+Make sure you have a vhost for the API under Apache2 or Nginx. This vhost must have a DNS setup, pointing to it. Mine is called api.ericade.net and I use Certbot to get free certificates from Letsencrypt. How to set this up is out of the scope of this discussion. You don't have to have https enabled, but it's not recommended to run only http.
+
+Unpack the zipfile from Github. Omit the folder called "Frontend" and the file called "templatedata.sql". The index.htm should be in the root. Now open the config.php and configure the database-settings. The configfile is self-explanatory. Please go through the config-file and set it as needed.
 
 Recommendation: make sure your IDE (development console) knows about PHP. This makes it easy not to break stuff.
 
-Search for "/var/www/html/api.ericade.net/" in all .php-file and replace it with your own path on all files. If you're not sure what the path is, navigate to the folder that you put all the files for the api. Then type in pwd. This will give you information. I will try to fix a better solution for this in the future.
+Search for "/var/www/html/api.ericade.net/" in all .php-files and replace it with your own path on all files. If you're not sure what the path is, navigate to the folder that you put all the files for the api. Then type in pwd. This will give you information. I will try to fix a better solution for this in the future. Sorry, a bit of lazy coding :)
 
-Set a good password in the config-file. Open the file copy the text hereunder and use it in the "Now playing"-plugin to create the caller function for the whole setup. 
+Set a good password in the config-file. 
+
+Copy the text hereunder and use it in the "Now playing"-plugin to create the caller function for the whole setup. 
+To do so, select the HTTPWebRequest tab, set it to send POST and past it into POST-body. No need to fill in any login information.
 
 {
 	"Password": "<the password you typed into the config-file>",
@@ -73,6 +78,7 @@ Set a good password in the config-file. Open the file copy the text hereunder an
 	"StationID": "1"
 }
 
+Set it up to send this to the API-endpoint (api.youdomain.tld/radio/updatetrack/). This field is called "URL:".
 
 The PlayIt live machine and the EZDataLinks do not have to be the same. I run the base plaform on Windows 11 and my original version of EZDataLinks runs on a Linux box under Hyper-V.
 

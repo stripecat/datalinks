@@ -20,7 +20,7 @@ $apipwd="<password>"; # Only for ingest!
 # Only used to deter people from cheating with stars and requests.
 # What? You don't think people cheat? What planet are you from?
 
-$apikeyseed = 'fdVw38cpvY7eS72b1t4e'; # Super-secret password for the ticket encryption. Change before deploying.
+$apikeyseed = '<<Password>>'; # Super-secret password for the ticket encryption. Change before deploying.
 $iss = 'http://example.org';
 $aud = 'http://example.com';
 $iat = 1356999524;
@@ -49,7 +49,7 @@ $ForceGroupEvaluation = 0; # Set to 1 to force the scener <-> group mapping to b
 # Stream login to Shoutcast
 
 $sc_username = "admin";
-$sc_password = "bHdHbz68TUa2P0#8bUv";
+$sc_password = "<<Password>>";
 $sc_remote_url = 'http://192.168.74.20:8000/';
 $sc_server="192.168.74.20";
 
