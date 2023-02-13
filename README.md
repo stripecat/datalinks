@@ -1,6 +1,18 @@
 # ezdatalinks
 A backend database and request system for PlayIT Live.
 
+![How it works as a diagram](https://ericade.radio/assets/img/datalinksdiagram.png)
+
+1. The user loads the page with the request form.
+2. The www-site returns the page. User types a name of an artist or song.
+3. The webbrowser asks the api for a list matching the search.
+4. A list is sent back from the API.
+5. The user selects the song and clicks the "request song"-button. The webbrowser then calls the API.
+The API either rejects the request or accepts it. On acceptance, it is put in the QueuedRequests table.
+6. On every hour at 9 and 39 minutes past the hour, the Powershellscript asks for new request. If a request exists
+it will be handled. The script merges an stationID ("This is a brand new request from an Internet user) with the song requested. When done, it instructs the API that the song has been put in the station.
+7. The API moves the data from the QueuedRequests to the PlayedRequest table.
+
 WARNING:
 This software is published "as is". I cannot provide support for it. It requires an intermediate skill in system administration and preferably some programming skills. Expect no "Next, next finish".
 
@@ -25,10 +37,11 @@ be its own VHOST in Apache or NGinx.
 Pre-requisites
 ==============
 
-You will need one system running Windows for your PlayIT Live instance. It will need to have a local IIS webserver running.The request-function does NOT use it. But if you want to use another tools, PlayIT Downloader to download newscasts(https://github.com/stripecat/DownloadItLive), you need it. The rest of this instruction will assume that there is a local IIS on the PlayIT live computer.
+You will need one system running Windows for your PlayIT Live instance. 
 
 You will need another system running Linux. I have tested all this on Ubuntu 22.04. But I believe you can use any
-modern distribution. This system needs a vhost for the front and one for the api.
+modern distribution. This system needs a vhost for the front and one for the api. If you own a domain for your station, it's 
+recommended you create a subdomain called api, so the API can be reached on api.yourdomain.com. 
 
 If you have PlayIT Live running and a website for your station, you're probably already setup this way.
 
@@ -36,17 +49,17 @@ If you have PlayIT Live running and a website for your station, you're probably 
 The Internet facing API
 =======================
 
-Import the table-file call templatedata.sql from the Github clone into MariaDB or Nginx. This will create an empty instance. Create a user with full permissions to the database. No superdbuserprivileges needed.
+Import the table-file call extras/RadioAPI.sql from the Github clone into MariaDB or Mysql. This will create an empty tablestructure in a database called RadioAPI. Create a user with full permissions to the database with mysql -u root. No superdbuserprivileges is needed for the API. Just all commands (SELECT, INSERT, UPDATE and DELETE).
 
-Make sure you have a vhost for the API under Apache2 or Nginx. This vhost must have a DNS setup, pointing to it. Mine is called api.ericade.net and I use Certbot to get free certificates from Letsencrypt. How to set this up is out of the scope of this discussion. You don't have to have https enabled, but it's not recommended to run only http.
+Make sure you have a vhost for the API under Apache2 or Nginx. This vhost must have a DNS setup, pointing to it. Mine is called api.ericade.net and I use Certbot to get free certificates from Letsencrypt. How to set this up is out of the scope of this discussion. You don't have to have https enabled, but it's not recommended to run only http. In reality, HTTPS is pretty mandatory as Google lowers rankings for site without it.
 
 Unpack the zipfile from Github. Omit the folder called "Frontend" and the file called "templatedata.sql". The index.htm should be in the root. Now open the config.php and configure the database-settings. The configfile is self-explanatory. Please go through the config-file and set it as needed.
 
 Recommendation: make sure your IDE (development console) knows about PHP. This makes it easy not to break stuff.
 
-Search for "/var/www/html/api.ericade.net/" in all .php-files and replace it with your own path on all files. If you're not sure what the path is, navigate to the folder that you put all the files for the api. Then type in pwd. This will give you information. I will try to fix a better solution for this in the future. Sorry, a bit of lazy coding :)
+Search for "/var/www/html/api.ericade.net/" in all .php-files and replace it with your own path on all php-files. If you're not sure what the path is, navigate to the folder that you put all the files for the api. Then type in pwd. This will give you information. I will try to fix a better solution for this in the future. Sorry, a bit of lazy coding :)
 
-Set a good password in the config-file. 
+Set a good password in the config-file.
 
 Copy the text hereunder and use it in the "Now playing"-plugin to create the caller function for the whole setup. 
 To do so, select the HTTPWebRequest tab, set it to send POST and past it into POST-body. No need to fill in any login information.
