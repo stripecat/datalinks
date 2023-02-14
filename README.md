@@ -31,7 +31,7 @@ PlayIT Live will not allow you to reach its database, nor is there an API for it
 
 Please note: the api.domain.tld must be its own domain. It can off course be hosted on the same box as the frontend. But it needs to be its own VHOST in Apache or NGinx.
 
-=Pre-requisites
+==Pre-requisites==
 
 
 You will need one system running Windows for your PlayIT Live instance. 
@@ -42,9 +42,7 @@ recommended you create a subdomain called api, so the API can be reached on api.
 
 If you have PlayIT Live running and a website for your station, you're probably already setup this way.
 
-=======================
-The Internet facing API
-=======================
+===The Internet facing API ===
 
 Import the table-file call extras/RadioAPI.sql from the Github clone into MariaDB or Mysql. This will create an empty tablestructure in a database called RadioAPI. Create a user with full permissions to the database with mysql -u root. No superdbuserprivileges is needed for the API. Just all commands (SELECT, INSERT, UPDATE and DELETE).
 
