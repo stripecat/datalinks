@@ -26,7 +26,7 @@ What you need
 - DNS-name. Recommended: api.yourdomain.com.
 - A busload of patience.
 
-How it works
+# How it works
 PlayIT Live will not allow you to reach its database, nor is there an API for it. This means, all data has to be exported. EZDatalinks gets its data from the "Now Playing" plugin. Everytime a song is played, the "Now playing"-plugin will send its data to EZDatalinks via the API-endpoint /radio/updatetrack/. The endpoint will add songs it does not know anything about or update the last played times for songs it knows.
 
 Please note: the api.domain.tld must be its own domain. It can off course be hosted on the same box as the frontend. But it needs to be its own VHOST in Apache or NGinx.
@@ -37,9 +37,12 @@ You will need one system running Windows for your PlayIT Live instance.
 
 You will need another system running Linux. I have tested all this on Ubuntu 22.04. But I believe you can use any
 modern distribution. This system needs a vhost for the front and one for the api. If you own a domain for your station, it's 
-recommended you create a subdomain called api, so the API can be reached on api.yourdomain.com. 
+recommended you create a subdomain called api, so the API can be reached on api.yourdomain.com.
 
-If you have PlayIT Live running and a website for your station, you're probably already setup this way.
+If you have PlayIT Live running and a website for your station, you're probably already setup this way with two different servers.
+
+Running the frontend and the api on different computers is possible. But the computer using the api must have Maridb or mysql on the same maskin as the API. If you have them on different computers, you may get performance problems.
+
 
 # The Internet facing API
 
@@ -58,6 +61,7 @@ Set a good password in the config-file.
 Copy the text hereunder and use it in the "Now playing"-plugin to create the caller function for the whole setup. 
 To do so, select the HTTPWebRequest tab, set it to send POST and past it into POST-body. No need to fill in any login information.
 
+...
 {
 	"Password": "<the password you typed into the config-file>",
 	"Artist": "{{artist}}",
@@ -84,6 +88,7 @@ To do so, select the HTTPWebRequest tab, set it to send POST and past it into PO
 	"Guid": "{{guid}}",
 	"StationID": "1"
 }
+...
 
 Set it up to send this to the API-endpoint (api.youdomain.tld/radio/updatetrack/). This field is called "URL:".
 
@@ -91,9 +96,7 @@ The PlayIt live machine and the EZDataLinks do not have to be the same. I run th
 
 Now test that the database is filling up with songs from the station.
 
-=======================
-Windows request loader
-=======================
+# Windows request loader
 
 Location: the server running PlayIt Live.
 
@@ -118,9 +121,7 @@ Next, create a scheduled task and call it "RequestLoader". Make it run the scrip
 
 Set it to stop if its still running after and hour. This should not happen, but rather safe than sorry.
 
-============
-PlayIt Live
-============
+# PlayIt Live
 
 You need to create two "Scheduled events" in playit live. They are there to look after a requested tune. If there is no file, the events wont fire. This means that the playout will work as normal. One event should fire at 10 past the hour and the other one at 40 minutes past the hour.
 
@@ -135,9 +136,7 @@ You need to create two "Scheduled events" in playit live. They are there to look
 
 With this the backend is setup properly.
 
-============
-Web frontend
-============
+# Web frontend
 
-The front end needs the ticket generator and code. Those are located under the folder "Frontend" in the package.
+The front end needs the ticket generator and code. Those are located under the folder "Extras/Frontend" in the package.
 
