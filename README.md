@@ -61,7 +61,7 @@ Set a good password in the config-file.
 Copy the text hereunder and use it in the "Now playing"-plugin to create the caller function for the whole setup. 
 To do so, select the HTTPWebRequest tab, set it to send POST and past it into POST-body. No need to fill in any login information.
 
-...
+```
 {
 	"Password": "<the password you typed into the config-file>",
 	"Artist": "{{artist}}",
@@ -88,7 +88,7 @@ To do so, select the HTTPWebRequest tab, set it to send POST and past it into PO
 	"Guid": "{{guid}}",
 	"StationID": "1"
 }
-...
+```
 
 Set it up to send this to the API-endpoint (api.youdomain.tld/radio/updatetrack/). This field is called "URL:".
 
