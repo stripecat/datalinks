@@ -5,18 +5,17 @@ A backend database and request system for PlayIT Live.
 
 1. The user loads the page with the request form.
 2. The www-site returns the page. User types a name of an artist or song.
-3. The webbrowser asks the api for a list matching the search.
-4. A list is sent back from the API.
-5. The user selects the song and clicks the "request song"-button. The webbrowser then calls the API.
+3. The webbrowser first obtains a token from the www-site for the user and asks the api for a list matching the search. The token is then sent along with the request to the API.
+4. A list of song is sent back from the API.
+5. The user selects the song and clicks the "request song"-button. The webbrowser then calls the API after obtaining a token by the www-site.
 The API either rejects the request or accepts it. On acceptance, it is put in the QueuedRequests table.
-6. On every hour at 9 and 39 minutes past the hour, the Powershellscript asks for new request. If a request exists
-it will be handled. The script merges an stationID ("This is a brand new request from an Internet user) with the song requested. When done, it instructs the API that the song has been put in the station.
+6. On every hour at 9 and 39 minutes past the hour, the Powershellscript asks if there are any new requests in the queue. If a request exists it will be handled. The script merges an stationID (e.g. "This is a brand new request from an Internet user) with the song requested. When done, it instructs the API that the song has been put in the station.
 7. The API moves the data from the QueuedRequests to the PlayedRequest table.
 
 WARNING:
 This software is published "as is". I cannot provide support for it. It requires an intermediate skill in system administration and preferably some programming skills. Expect no "Next, next finish".
 
-I have a very long time to go before this "web module" has a its excentricies ironed out. The shoutcast module is still in, even though I intend to remove it for an instance.
+I have a very long time to go before this "web module" has a its excentricies ironed out. The shoutcast module is still in, even though I intend to remove it in the future.
 
 What you need
 
@@ -30,12 +29,10 @@ What you need
 How it works
 PlayIT Live will not allow you to reach its database, nor is there an API for it. This means, all data has to be exported. EZDatalinks gets its data from the "Now Playing" plugin. Everytime a song is played, the "Now playing"-plugin will send its data to EZDatalinks via the API-endpoint /radio/updatetrack/. The endpoint will add songs it does not know anything about or update the last played times for songs it knows.
 
-Please note: the api.domain.tld must be its own domain. It can off course be hosted on the same box as the frontend. But it needs to
-be its own VHOST in Apache or NGinx.
+Please note: the api.domain.tld must be its own domain. It can off course be hosted on the same box as the frontend. But it needs to be its own VHOST in Apache or NGinx.
 
-==============
-Pre-requisites
-==============
+=Pre-requisites
+
 
 You will need one system running Windows for your PlayIT Live instance. 
 
