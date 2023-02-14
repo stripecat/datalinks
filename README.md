@@ -92,7 +92,9 @@ To do so, select the HTTPWebRequest tab, set it to send POST and past it into PO
 
 Set it up to send this to the API-endpoint (api.youdomain.tld/radio/updatetrack/). This field is called "URL:".
 
-The PlayIt live machine and the EZDataLinks do not have to be the same. I run the base plaform on Windows 11 and my original version of EZDataLinks runs on a Linux box under Hyper-V.
+The PlayIt live machine and the EZDataLinks do not (should not) have to be the same. Running the API on Windows should be possible, but is not recommended. I run the base plaform on Windows 11 and my original version of EZDataLinks runs on a Linux box under Hyper-V.
+
+Please note that running the radio www-page and the API on the same machine is probably the best solution. Remember that machine needs to have MariaDB or MySQL.
 
 Now test that the database is filling up with songs from the station.
 
@@ -106,18 +108,18 @@ Next up is the requestloader. It´s a Powershell script, that will check if ther
 
 Install the webserver-role on the main server for PlayIt Live. This will only be used by PlayIt Live, so it should not be set to listen on any ip-adress other than 127.0.0.1.
 
-C:\inetpub\wwwroot\ is the root path. Create the folders radio\request in the webroot.
-Copy the file requestloader.ps1 (From folder called "Powershell") to the PIL broadcast-machine under c:\scripts\, then open it there:
+C:\ezdatalinks\ is the root path.
+Copy the file requestloader.ps1 (From folder called "Powershell") to the PIL broadcast-machine under C:\ezdatalinks\, then open it there to edit:
 
-Set $Destination_dir to "C:\inetpub\wwwroot\radio\request".
+Make sure $Destination_dir is set to "C:\ezdatalinks\RequestLoader".
 
-Edit the declarations to match your settings. Download the latest version of FFMPEG from here (https://www.gyan.dev/ffmpeg/builds/). Put it in the c:\scripts.
+ Download the latest version of FFMPEG from here (https://www.gyan.dev/ffmpeg/builds/). Put it in the "C:\ezdatalinks\"
 
-Go to C:\inetpub\wwwroot\radio\request and create \templatefiles\. Put the announcing ident ("You are listening to KRUD 95.7, here is a request from a listener") under it and call it intreq.mp3.
+Go to C:\ezdatalinks\request and create a directory called templatefiles. Put the announcing ident ("You are listening to KRUD 95.7, here is a request from a listener") under it and call it intreq.mp3.
 
-The script needs to run once per minute. It will the do housekeeping or load the next waiting request. At start, it checks the minute. If it's 9 or 39 minutes past the hour, it will check with the API to see if there is a request to play. If the api responds with pending request, it will create a file in "C:\inetpub\wwwroot\radio\request" called slotx.wav. Requests playing a 10 past the hour are bound to "slot1" and those playing at 40 minutes past the hour are called "slot2". The file is thus either slot1.wav or slot2.wav.
+The script needs to run once per minute. It will the do housekeeping or load the next waiting request. At start, it checks the minute. If it's 9 or 39 minutes past the hour, it will check with the API to see if there is a request to play. If the api responds with pending request, it will create a file in "C:\ezdatalinks\request" called slotx.wav. Requests playing a 10 past the hour are bound to "slot1" and those playing at 40 minutes past the hour are called "slot2". The file is thus either slot1.wav or slot2.wav.
 
-Next, create a scheduled task and call it "RequestLoader". Make it run the script %SystemRoot%\system32\WindowsPowerShell\v1.0\powershell.exe and this as the arguments -NoProfile -NoLogo -NonInteractive -ExecutionPolicy Bypass -File "C:\Users\Erik Zalitis Admin\Desktop\Scripts\RequestLoader.ps1" 
+Next, create a scheduled task and call it "RequestLoader". Make it run the script %SystemRoot%\system32\WindowsPowerShell\v1.0\powershell.exe and this as the arguments -NoProfile -NoLogo -NonInteractive -ExecutionPolicy Bypass -File "C:\ezdatalinks\RequestLoader.ps1" 
 
 Set it to stop if its still running after and hour. This should not happen, but rather safe than sorry.
 
@@ -128,11 +130,11 @@ You need to create two "Scheduled events" in playit live. They are there to look
 1. Call the first "Scheduled event" "Play request from Internet - Slot 1"
 2. Make it run daily on every hour and at 09 minutes past the hour.
 3. Click "Add action" (green plus sign in the bottom of the Scheduled event).
-4. Add action to "Insert track" and select From: File and point to the the filename C:\inetpub\wwwroot\radio\request\request1.wav.
+4. Add action to "Insert track" and select From: File and point to the the filename C:\ezdatalinks\request\request1.wav.
    Remember that this file and the whole webserver is just for PlayIt live. The API and front should run on an Internet facing server.
 5. Call the second "Scheduled event" "Play request from Internet - Slot 2"
 6. Click "Add action" (green plus sign in the bottom of the Scheduled event).
-7. Add action to "Insert track" and select From: File and point to the the filename C:\inetpub\wwwroot\radio\request\request2.wav.
+7. Add action to "Insert track" and select From: File and point to the the filename C:\ezdatalinks\request\request2.wav.
 
 With this the backend is setup properly.
 
