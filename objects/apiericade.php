@@ -5,468 +5,6 @@
  */
 include_once '../../config/common.php';
 
-class Streams
-{
-
-   //Db connection and table
-   private $conn;
-
-   public $Country;
-   public $Playtime;
-   public $Event;
-   public $IP;
-   public $Eventtype;
-   public $Agent;
-   public $Identifier;
-   public $Isp;
-   public $Regionname;
-   public $StreamID;
-   public $NumberOfEvents;
-   public $StationID;
-
-   function updatestreamevent()
-   {
-      include '/var/www/html/api.ericade.net/config.php';
-      global $dbht;
-
-      if (isset($this->Password)) {
-         $guid = checkpassword($this->Password);
-      } else {
-         $guid == FALSE;
-      }
-      if ($guid == FALSE) {
-         return array("result" => 'FALSE', "message" => 'FALSE', "Submessage" => 'Missing or incorrect password.');
-      }
-
-      $todaysdate = date("Y-m-d H:i:s");
-
-      # Validate the fields
-
-      $IP = sanitize_html_string($this->IP, 1, 255);
-      $Country = sanitize_html_string($this->Country, 1, 40);
-      $Playtime = sanitize_numeric_string($this->Playtime, 1, 7);
-      $Event = sanitize_html_string($this->Event, 1, 255);
-      $Eventtype = sanitize_html_string($this->Eventtype, 1, 255);
-      $Agent = sanitize_html_string($this->Agent, 1, 255);
-      $Identifier = sanitize_html_string($this->Identifier, 1, 255);
-      $Regionname = sanitize_html_string($this->Regionname, 1, 255);
-      $Isp = sanitize_html_string($this->Isp, 1, 255);
-      $City = sanitize_html_string($this->City, 1, 255);
-      $Zip = sanitize_html_string($this->Zip, 1, 255);
-      $StreamID = sanitize_numeric_string($this->StreamID, 1, 3);
-
-      $TS = time(); # Epoch!
-      $Timestamphr = date("Y-m-d H:i:s");
-
-
-      if ($Event == "") {
-         return array("result" => 'FALSE', "message" => 'FALSE', "Submessage" => 'Event-text needed.');
-      }
-
-
-      # Check the track currently plaything
-
-      $i = 0;
-
-      $sql = "SELECT `fullartist`, `title`, `lastplayed` FROM `nowplaying` WHERE StationID = " . $StreamID;
-
-
-      #  echo $sql;
-
-      $NowPlayingArtist = "";
-      $NowPlayingTitle = "";
-      $NowPlayingStartTime = "";
-
-      foreach ($dbht->query($sql) as $row) {
-
-         $NowPlayingArtist = $row["fullartist"];
-         $NowPlayingTitle = $row["title"];
-         $NowPlayingStartTime = $row["lastplayed"];
-
-         $i++;
-      }
-
-
-      $NPCurrTime = gmdate('r', $NowPlayingStartTime);
-      $Nowplaying = $NowPlayingArtist . "-" . $NowPlayingTitle . ". Started at: " . $NPCurrTime . ".";
-
-      # On every logoff, match the logoff by the Identifier.
-
-      if ($Eventtype == "Logoff") {
-
-         # Get the countrydata
-         # This override the Regionname, Isp and Country fields in order to lessen the calls to the IP-locator service.
-
-         /*    $sql = "SELECT Country, Regionname, Isp FROM `nowlistening` WHERE Identifier = '" . $Identifier . "'";
-
-         foreach ($dbht->query($sql) as $row) {
-
-            $Country = $row["Country"];
-            $Regionname = $row["Regionname"];
-            $Isp = $row["Isp"];
-
-            $i++;
-         }*/
-
-         # Obsolete. We'll pull the session-data from Shoutcast when the user call the front end API instead.
-
-         /*
-$sql = "DELETE FROM `nowlistening` WHERE Identifier = '".$Identifier."'";
-
-foreach($dbht->query($sql) as $row) { 
-
-$i++;
-
-} */
-      }
-
-
-      # Insert event.
-
-      $i = 0;
-
-      $sql = "INSERT INTO streamevents(`IP`, `Event`, `Playtime`, `Country`, Regionname, Isp, City, Zip, `Eventtype`, `Timestamp`,Timestamphr,`Agent`,PlayingAtLogoff,Identifier,StreamID) VALUES ('" . $IP . "','" . $Event . "'," . $Playtime . ",'" . $Country . "','" . $Regionname . "','" . $Isp . "','" . $City . "','" . $Zip . "','" . $Eventtype . "','" . $TS . "','" . $Timestamphr . "','" . $Agent . "','" . $Nowplaying . "','" . $Identifier . "'," . $StreamID . ")";
-
-
-      #  echo $sql;
-
-      foreach ($dbht->query($sql) as $row) {
-
-         $i++;
-      }
-
-
-      if ($Eventtype == "Logon") {
-
-         checkip($IP, $Country, $Regionname, $Isp, $City, $TS, $Timestamphr, $Zip);
-      }
-
-      # Update now playing
-      # On every logon, add a row
-
-      # Obsolete. We'll pull the session-data from Shoutcast when the user call the front end API instead.
-
-      /*
-if ($Eventtype == "Logon")
-{
-
-$i=0;
-     
-$sql = "INSERT INTO `nowlistening`(`IP`, `Agent`, `Timestamp`, `Playtime`, `Country`, Regionname, Isp, `Identifier`) VALUES ('".$IP."','".$Agent."',".$TS.",".$Playtime.",'".$Country."','".$Regionname."','".$Isp."','".$Identifier."')";
-
-foreach($dbht->query($sql) as $row) { 
-
-$i++;
-
-}
-}
-*/
-
-
-      return array("result" => 'TRUE', "message" => 'TRUE', "Submessage" => 'All done.');
-   }
-
-
-   function getlistening()
-   {
-
-      include '/var/www/html/api.ericade.net/config.php';
-      global $dbht;
-
-      # $InternalExcludeShoutcastIPRanges=$InternalExcludeShoutcastIPRanges;
-
-      #$guid=checkpassword ($this->Password);
-      $token = validatejwt($this->Password);
-      $gtoken = json_decode($token);
-      if ($gtoken->message == "Access denied.") {
-         return array("result" => 'FALSE', "message" => 'User token invalid or empty.');
-      }
-      # $userid=$gtoken->data->id;
-      # $useremail=$gtoken->data->email;
-
-      $todaysdate = date("Y-m-d H:i:s");
-
-      # Validate the fields
-      $NumberOfEvents = sanitize_numeric_string($this->NumberOfEvents, 1, 4);
-      $StationID = sanitize_numeric_string($this->StationID, 1, 2);
-
-
-
-      if ($StationID == "") {
-         $sidstring = "";
-         $sid2string = "";
-      } else {
-         $sidstring = " and StreamID = " . $StationID . "";
-         $sid2string = "where t1.StationID = " . $StationID . "";
-      }
-
-      if ($NumberOfEvents == "") {
-         return array("result" => 'FALSE', "message" => 'FALSE', "Submessage" => 'You need to specify a correct number of events to display.');
-      }
-
-      if ($NumberOfEvents > 100) {
-         return array("result" => 'FALSE', "message" => 'FALSE', "Submessage" => 'You may only display up to the last 100 events.');
-      }
-
-      # Logic to filter out tracks that we should store.
-
-
-
-      # if ($fdebug == 1) {
-      #    echo "<br>StationID in array: " . $StationIDInArray;
-      #    echo "<br>Station: " . $Stations[$StationIDInArray]["StationName"];
-      # }
-
-
-      # Check the streams
-
-      function DecodeSC($jsonentry, $sid, $sname)
-      {
-         global $sc_server, $InternalExcludeShoutcastIPRanges;
-
-
-
-         # Check IP-range.
-
-         $range = false;
-         $clientip = $jsonentry->{'xff'};
-
-         #$InternalExcludeShoutcastIPRanges = array("192.168.74.0/24");
-
-         foreach ($InternalExcludeShoutcastIPRanges as $InternalExcludeShoutcastIPRange) {
-            # Check if the ip is in an exclusion range and should not be listed as an active listener.
-            if (ip_in_range($clientip, $InternalExcludeShoutcastIPRange) == true) {
-               $range = true;
-               continue;
-            }
-         }
-
-         if ($range == true) {
-            $jsonpl = "{";
-            /* $jsonpl .= "\"Playtime\":\"".""."\",";
-            $jsonpl .= "\"Playtimehr\":\"".""."\",";
-            $jsonpl .= "\"UserAgent\":\"".""."\",";
-            $jsonpl .= "\"IP\":\"".""."\",";
-            $jsonpl .= "\"Referer\":\"".$ref."\",";
-            $jsonpl .= "\"StationID\":\"".$sid."\",";
-            $jsonpl .= "\"StationName\":\"".$sname."\",";
-            $jsonpl .= "\"Country\":\"".$ipinfo["Country"]."\",";
-            $jsonpl .= "\"Regionname\":\"".$ipinfo["Regionname"]."\",";
-            $jsonpl .= "\"Isp\":\"".$ipinfo["Isp"]."\",";
-            $jsonpl .= "\"City\":\"".$ipinfo["City"]."\",";
-            $jsonpl .= "\"Zip\":\"".$ipinfo["Zip"]."\""; */
-            $jsonpl .= "},";
-            exit;
-         }
-
-         $jsonpl = "{";
-         $jsonpl .= "\"Playtime\":\"" . $jsonentry->{'connecttime'} . "\",";
-
-         if ($jsonentry->{'connecttime'} < 86400) {
-            if ($jsonentry->{'connecttime'} < 3600) {
-               $PlayTimeHR = gmdate("i", $jsonentry->{'connecttime'}) . " minutes";
-            } elseif ($jsonentry->{'connecttime'} < 7200) {
-               $PlayTimeHR = gmdate("h", $jsonentry->{'connecttime'}) . " hour " . gmdate("i", $jsonentry->{'connecttime'}) . " minutes";
-            } elseif ($jsonentry->{'connecttime'} < 60) {
-               $PlayTimeHR = gmdate("s seconds", $jsonentry->{'connecttime'});
-            } else {
-               $PlayTimeHR = gmdate("H", $jsonentry->{'connecttime'}) . " hours " . gmdate("i", $jsonentry->{'connecttime'}) . " minutes";
-            }
-         } elseif ($jsonentry->{'connecttime'} < 172800) {
-            $PlayTimeHR =  gmdate("d", $jsonentry->{'connecttime'}) - 1 . " day " . gmdate("H", $jsonentry->{'connecttime'}) . " hours " . gmdate("i", $jsonentry->{'connecttime'}) . " minutes";
-         } else {
-            $PlayTimeHR =  gmdate("d", $jsonentry->{'connecttime'}) - 1 . " days " . gmdate("H", $jsonentry->{'connecttime'}) . " hours " . gmdate("i", $jsonentry->{'connecttime'}) . " minutes";
-         }
-
-         $jsonpl .= "\"Playtimehr\":\"" . $PlayTimeHR . "\",";
-         $jsonpl .= "\"UserAgent\":\"" . $jsonentry->{'useragent'} . "\",";
-         if ($jsonentry->{'hostname'} == $sc_server) {
-            $ref = "Modern";
-            $jsonpl .= "\"IP\":\"" . $jsonentry->{'xff'} . "\",";
-            $ipinfo = getip($jsonentry->{'xff'});
-         } else {
-            $ref = "Legacy";
-            $jsonpl .= "\"IP\":\"" . $jsonentry->{'hostname'} . "\",";
-            $ipinfo = getip($jsonentry->{'hostname'});
-         }
-
-         #echo print_r($ipinfo);
-
-         $jsonpl .= "\"Referer\":\"" . $ref . "\",";
-         $jsonpl .= "\"StationID\":\"" . $sid . "\",";
-         $jsonpl .= "\"StationName\":\"" . $sname . "\",";
-         $jsonpl .= "\"Country\":\"" . $ipinfo["Country"] . "\",";
-         $jsonpl .= "\"Regionname\":\"" . $ipinfo["Regionname"] . "\",";
-         $jsonpl .= "\"Isp\":\"" . $ipinfo["Isp"] . "\",";
-         $jsonpl .= "\"City\":\"" . $ipinfo["City"] . "\",";
-         $jsonpl .= "\"Zip\":\"" . $ipinfo["Zip"] . "\"";
-         $jsonpl .= "},";
-
-         return $jsonpl;
-      }
-
-
-      $opts = array(
-         'http' => array(
-            'method' => "GET",
-            'header' => "Authorization: Basic " . base64_encode("$sc_username:$sc_password")
-         )
-      );
-
-      $context = stream_context_create($opts);
-
-      $i = 0;
-      $jsonpl = "{ \"RadioStats\":[";
-      $j = 0;
-
-      if ($StationID == "") {
-         foreach ($Stations as $Station) {
-
-
-            $sid = $Stations[$i]["stationid"];
-            $sname = $Stations[$i]["StationName"];
-
-            #$jsonpl .= 
-            $json = json_decode(file_get_contents($sc_remote_url . "admin.cgi?sid=" . $sid . "&mode=viewjson&page=3", false, $context));
-
-            foreach ($json as $jsonentry) {
-               $jsonpl .= DecodeSC($jsonentry, $sid, $sname);
-               $j++;
-            }
-
-            $i++;
-         }
-
-
-         if ($j > 0) {
-            $jsonpl = substr($jsonpl, 0, -1);
-         }
-         $jsonpl .= "],";
-      } else {
-
-         $StationIDInArray = array_search($StationID, array_column($Stations, 'stationid'));
-
-         if ($StationIDInArray !== false) {
-         } else {
-            return array("result" => 'FALSE', "message" => 'FALSE', "Submessage" => 'Station configuration is not valid or the station does not exist.');
-         }
-
-         $sid = $Stations[$StationIDInArray]["stationid"];
-         $sname = $Stations[$StationIDInArray]["StationName"];
-
-         $json = json_decode(file_get_contents($sc_remote_url . "admin.cgi?sid=" . $sid . "&mode=viewjson&page=3", false, $context));
-
-         foreach ($json as $jsonentry) {
-            $jsonpl .= DecodeSC($jsonentry, $sid, $sname);
-            $j++;
-         }
-
-
-         if ($j > 0) {
-            $jsonpl = substr($jsonpl, 0, -1);
-         }
-         $jsonpl .= "],";
-      }
-
-      # Generate the eventlog
-
-      $sql = "SELECT `timestamphr`, `action`, `logtext`, `StationID` FROM `changelog` ORDER BY timestamphr DESC LIMIT 5";
-
-      $jsonevent = "\"Events\":[";
-      foreach ($dbht->query($sql) as $row) {
-         $StationIDInArray = array_search($row["StationID"], array_column($Stations, 'stationid'));
-         $jsonevent .= "{\"TimeStamphr\":\"" . $row["timestamphr"] . "\",";
-         $jsonevent .= "\"Action\":\"" . $row["action"] . "\",";
-         $jsonevent .= "\"LogText\":\"" . $row["logtext"] . "\",";
-         $jsonevent .= "\"StationName\":\"" . $Stations[$StationIDInArray]["StationName"] . "\",";
-         $jsonevent .= "\"StationID\":\"" . $row["StationID"] . "\"},";
-      }
-      $jsonevent = substr($jsonevent, 0, -1);
-      $jsonevent .= "] }";
-
-      # Generate "the now playing"
-
-      $sql = "SELECT t1.`fullartist`, t1.`title`, t1.`lastplayed`, t1.`trackid`, t2.`Album` as \"Album\", t1.`StationID` FROM `nowplaying` t1 left join titles t2 on t1.trackid = t2.id " . $sid2string . "";
-      $i = 0;
-
-      #echo $sql;
-
-
-      $npi = 0;
-      $jsonplay = "\"NowPlaying\":[";
-      foreach ($dbht->query($sql) as $row) {
-
-         $songtype = gettracktype($row["Album"]);
-         $StationIDInArray = array_search($row["StationID"], array_column($Stations, 'stationid'));
-         $jsonplay .= "{\"Fullartist\":\"" . $row["fullartist"] . "\",";
-         $jsonplay .= "\"Title\":\"" . $row["title"] . "\",";
-         $jsonplay .= "\"LastPlayed\":\"" . $row["lastplayed"] . "\",";
-         $jsonplay .= "\"SongType\":\"" . $songtype . "\",";
-         $jsonplay .= "\"TrackID\":\"" . $row["trackid"] . "\",";
-         $jsonplay .= "\"StationName\":\"" . $Stations[$StationIDInArray]["StationName"] . "\",";
-         $jsonplay .= "\"StationID\":\"" . $row["StationID"] . "\"},";
-         $npi++;
-      }
-      if ($npi > 0) {
-         $jsonplay = substr($jsonplay, 0, -1);
-      }
-      $jsonplay .= "],";
-
-
-      # Generate the answer
-
-      $sql = "SELECT IP,Country,Regionname,Isp,City, Zip,Timestamphr,Agent,Playtime,PlayingAtLogoff,StreamID FROM `streamevents` WHERE Eventtype = 'Logoff' and playtime > 600 and  Agent != 'axios/0.26.1' and IP not like '%192.168%'" . $sidstring . " and isp != 'Zetup' and agent not like '%Eriks%'
-      ORDER BY `streamevents`.`Timestamphr` DESC LIMIT " . $NumberOfEvents . "";
-
-      $i = 0;
-      $jsonpl .= "\"StreamEvents\":[";
-      foreach ($dbht->query($sql) as $row) {
-
-         $i++;
-
-         if ($row["Playtime"] < 86400) {
-            if ($row["Playtime"] < 3600) {
-               $PlayTimeHR = gmdate("i", $row["Playtime"]) . " minutes";
-            } elseif ($row["Playtime"] < 7200) {
-               $PlayTimeHR = gmdate("h", $row["Playtime"]) . " hour " . gmdate("i", $row["Playtime"]) . " minutes";
-            } elseif ($row["Playtime"] < 60) {
-               $PlayTimeHR = gmdate("s seconds", $row["Playtime"]);
-            } else {
-               $PlayTimeHR = gmdate("H", $row["Playtime"]) . " hours " . gmdate("i", $row["Playtime"]) . " minutes";
-            }
-         } else {
-            $PlayTimeHR = "00:00:00";
-         }
-
-
-         $StationIDInArray = array_search($row["StreamID"], array_column($Stations, 'stationid'));
-         $jsonpl .= "{\"IP\":\"" . $row["IP"] . "\",";
-         $jsonpl .= "\"Country\":\"" . $row["Country"] . "\",";
-         $jsonpl .= "\"Regionname\":\"" . $row["Regionname"] . "\",";
-         $jsonpl .= "\"Isp\":\"" . $row["Isp"] . "\",";
-         $jsonpl .= "\"City\":\"" . $row["City"] . "\",";
-         $jsonpl .= "\"Zip\":\"" . $row["Zip"] . "\",";
-         $jsonpl .= "\"Timestamphr\":\"" . $row["Timestamphr"] . "\",";
-         $jsonpl .= "\"Agent\":\"" . $row["Agent"] . "\",";
-         $jsonpl .= "\"Playtime\":\"" . $row["Playtime"] . "\",";
-         $jsonpl .= "\"Playtimehr\":\"" . $PlayTimeHR . "\",";
-         $jsonpl .= "\"StationName\":\"" . $Stations[$StationIDInArray]["StationName"] . "\",";
-         $jsonpl .= "\"StationID\":\"" . $row["StreamID"] . "\",";
-         $jsonpl .= "\"PlayingAtLogoff\":\"" .  $row["PlayingAtLogoff"] . "\"},";
-      }
-
-
-
-      $jsonpl = substr($jsonpl, 0, -1);
-      $jsonpl .= "],";
-
-      $jsonpl .= $jsonplay;
-      $jsonpl .= $jsonevent;
-
-      return array("result" => 'TRUE', "message" => $jsonpl, "Submessage" => 'All done.');
-   }
-} // End of class Streams
-
 /** @package Tracks is ...  */
 class Tracks
 {
@@ -537,7 +75,7 @@ class Tracks
    public $title;
    public $artist;
    public $BroadcastDate;
-   
+
    # Functions responding to service-calls.
 
    #************************************************************************************
@@ -967,124 +505,6 @@ class Tracks
    } # addrequest
 
 
-   #************************************************************************************
-   # updatetrackdates
-
-   function updatetrackdates()
-   {
-
-      include '/var/www/html/api.ericade.net/config.php';
-      global $dbht;
-
-      # This function will not be needed until we figure a way to remap station 2-data. 
-      die("This function is disabled.");
-
-      $guid = checkpassword($this->Password);
-      if ($guid == FALSE) {
-         return array("result" => 'FALSE', "message" => 'FALSE', "Submessage" => 'Missing or incorrect password.');
-      }
-
-      $todaysdate = date("Y-m-d H:i:s");
-
-      # Validate the fields
-      $CreateDate = sanitize_numeric_string($this->CreateDate, 1, 20);
-      $guid = sanitize_hexdec_string($this->guid, 32, 32);
-      if (isset($this->Path)) {
-         $path = sanitize_filename_string($this->Path, 1, 455);
-      } else {
-         $path = null;
-      }
-
-      if ($guid == "" and $path == "") {
-         return array("result" => 'FALSE', "message" => 'FALSE', "Submessage" => 'You need to specify a guid or a path.');
-      }
-
-
-      if ($CreateDate == "") {
-         return array("result" => 'FALSE', "message" => 'FALSE', "Submessage" => 'You need to specify a CreateDate.');
-      }
-
-
-      if (strlen($CreateDate) > 10) {
-         return array("result" => 'FALSE', "message" => 'FALSE', "Submessage" => 'Millimeter precision in epoch is not accepted. Please use proper seconds since 1970. I.e., just lop of the three last digits.');
-      }
-
-      /* Note on the guid
-
-         What we get from the script: 39b14f6f22ea4136840d1fb476b7128b
-
-         What we must convert it to: 39b14f6f-22ea-4136-840d-1fb476b7128b
-
-         Cadence: 8-4-4-4-12
-
-      */
-
-      # Please note that the path takes precedence.
-
-      if ($path != "") {
-         # 
-         $path = str_replace(" ", "&#37;20", $path);
-         $path = str_replace(",", "&#37;2C", $path);
-         # $path = str_replace("`'","&#37;27",$path);
-
-         $path = "&#37;5C" . $path; # Prepending the \ to ensure it's unique.
-         $sql = "SELECT `id`,`fullartist`,`title`, `stationid`, `Guid` FROM `titles` WHERE `Path` like '%" . $path . "'";
-         $hguid = "";
-      } else {
-         $hguid = substr($guid, 0, 8) . "-" . substr($guid, 8, 4) . "-" . substr($guid, 12, 4) . "-" . substr($guid, 16, 4) . "-" . substr($guid, 20, 12);
-         $sql = "SELECT `id`,`fullartist`,`title`, `stationid` FROM `titles` WHERE `Guid` = '" . $hguid . "'";
-      }
-
-      # Search for the track.
-
-      $i = 0;
-
-      foreach ($dbht->query($sql) as $row) {
-         $i++;
-         $id = $row["id"];
-         $fullartist = $row["fullartist"];
-         $title = $row["title"];
-         $stationid = $row["stationid"];
-         if ($hguid == "") {
-            $hguid = $row["fullartist"];
-         }
-      }
-
-      if ($i == 0) {
-         return array("result" => 'FALSE', "message" => 'FALSE', "Submessage" => 'Track not found');
-      } else if ($i > 1) {
-         return array("result" => 'FALSE', "message" => 'FALSE', "Submessage" => 'Unknown error');
-      }
-
-      # If we found the track, we will proceed.
-
-      # First we convert the epoch to a HR (=Human readable) date.
-      # $CreateDate=substr_replace($CreateDate ,"",-3);
-      $dt = new DateTime("@$CreateDate");
-      $createdatehr = $dt->format('Y-m-d H:i:s');
-
-      # The we update the track info.
-
-      if ($path != "") {
-
-         $sql = "UPDATE `titles` SET `CreationDate`=" . $CreateDate . ",`CreationDateHr`='" . $createdatehr . "' WHERE Path like '%" . $path . "%'";
-      } else {
-         $sql = "UPDATE `titles` SET `CreationDate`=" . $CreateDate . ",`CreationDateHr`='" . $createdatehr . "' WHERE Guid = '" . $hguid . "'";
-      }
-
-      $rc = $dbht->query($sql);
-
-      # The we log it as an event.
-
-      # Those timestamps are only for the log.
-
-      $TS = time(); # Epoch!
-      $Timestamphr = date("Y-m-d H:i:s");
-
-      $rc = updatechangelog($id, $fullartist, $title, $TS, $Timestamphr, $hguid, "Creationdate update", ("The track " . $title . " changed creationdate to " . $createdatehr . "."), $stationid);
-
-      return array("result" => 'TRUE', "message" => ("Epoch: " . $CreateDate . " Real: " . $createdatehr . "."), "Submessage" => 'All done.');
-   }
 
    #************************************************************************************
    # getplayout
@@ -1438,14 +858,14 @@ class Tracks
       # Get track-info. Composite star rating, data etc.
 
       $SearchArtist = $Search;
-      
+
 
       if ($Search != "" or $SimpleSearch == 1) {
 
          # Convert the title to proper coding.
          $arr = array(" " => "&#37;20", "!" => "&#37;21", "*" => "&#37;2A", "&#37;2F" => "/");
          $stemp = strtr($Search, $arr);
-         
+
          $SearchTitle = $stemp;
          #$SearchArtist = $stemp;
       }
@@ -1667,96 +1087,73 @@ class Tracks
 
          if ($Search == "" and $TrackID == 0) {
 
-            if ($override == 1) {
-               $fullartist = "Feature Story News";
-               $title = "Newscast from Best of ERICADE.radio";
-               $songtype = "Newscast";
-               $timestamp = "1111111";
-               $image = "https://radio.ericade.net/radiodb/images/FSN.png";
-               $about = "A short three minute news cast from FSN.";
+
+            # Check for stuff to show, that does not get into the database, but needs to be shown.
+
+            # Need to check the nowplaying again...
+
+            $nowfullartist = "";
+
+            $sql = "SELECT `fullartist`, `title`, `lastplayed`, `trackid`, `Duration` FROM `nowplaying` WHERE StationID=" . $StationID . "";
+
+            $i = 0;
+
+
+            foreach ($dbht->query($sql) as $ovrow) {
+               $i++;
+               $nowfullartist = $ovrow["fullartist"];
+               $title = $ovrow["title"];
+               $trackid = $ovrow["trackid"];
+               $Duration = $ovrow["Duration"];
+            }
+
+            $StationIDInArray = array_search($StationID, array_column($Stations, 'stationid'));
+
+            # This event will fire if an artist on the RequestPrefix-list is played.
+            if (string_search_partial($Stations[$StationIDInArray]["RequestPrefix"], strtolower($nowfullartist)) == true) {
+
+
+               if (is_numeric($Duration)) {
+                  $PlayTime = $Duration;
+
+                  if ($PlayTime < 86400) {
+                     if ($PlayTime < 3600) {
+                        $PlayTimeHR = gmdate("i:s", $PlayTime);
+                     } elseif ($PlayTime < 60) {
+                        $PlayTimeHR = gmdate("s", $PlayTime);
+                     } else {
+                        $PlayTimeHR = gmdate("H:i:s", $PlayTime);
+                     }
+                  } else {
+                     $PlayTimeHR = "00:00:00";
+                  }
+               } else {
+                  $PlayTime = 0;
+                  $PlayTimeHR = "00:00:00";
+               }
+
+
+               $fullartist = $nowfullartist;
+               $title = $title;
+               $songtype = "Listener request";
+               $timestamp = "111111";
+               $image = "https://radio.ericade.net/radiodb/images/request.jpg";
+               $about = "A request made by a listener! Go to \"Request a song\" in the menu on our website ericade.radio to make your own request.";
                $podcast = "";
                $trackid = 0;
-               $ArtistLongDescription =  "News from Feature Story News giving you the latest updates from breaking events areound the globe. When fresh reports are available, the station ID will say: \"With the latest from Feature Story News\". You can expect brand new reports every four hour.";
-               $ArtistDescription = "News from Feature Story News giving you the latest updates from breaking events areound the globe. When fresh reports are available, the station ID will say: \"With the latest from Feature Story News\". You can expect brand new reports every four hour.";
+               $ArtistLongDescription = "Requests are your way to make the station yours! Remember that great tune you heard yesterday? Now you can hear it again.";
+               $ArtistDescription = "Requests are your way to make the station yours! Remember that great tune you heard yesterday? Now you can hear it again.";
                $ProductionNotes = "";
                $artisttotalplays = "";
-               $PlayTimeHR = "03:10";
-               $PlayTimee = "190";
-               $isStarable = 0;
+               $PlayTimeHR = $PlayTimeHR;
+               $PlayTime = $Duration;
                $timestamphr = "-";
                $BroadcastDate = "-";
+               $isStarable = 0;
                $Reason = "";
                $titleid = "";
                $PodcastURL = "";
-
-            } else {
-               # Check for stuff to show, that does not get into the database, but needs to be shown.
-
-               # Need to check the nowplaying again...
-
-               $nowfullartist = "";
-
-               $sql = "SELECT `fullartist`, `title`, `lastplayed`, `trackid`, `Duration` FROM `nowplaying` WHERE StationID=" . $StationID . "";
-
-               $i = 0;
-
-
-               foreach ($dbht->query($sql) as $ovrow) {
-                  $i++;
-                  $nowfullartist = $ovrow["fullartist"];
-                  $title = $ovrow["title"];
-                  $trackid = $ovrow["trackid"];
-                  $Duration = $ovrow["Duration"];
-               }
-
-               $StationIDInArray = array_search($StationID, array_column($Stations, 'stationid'));
-
-               # This event will fire if an artist on the RequestPrefix-list is played.
-               if (string_search_partial($Stations[$StationIDInArray]["RequestPrefix"], strtolower($nowfullartist)) == true) {
-
-
-                  if (is_numeric($Duration)) {
-                     $PlayTime = $Duration;
-
-                     if ($PlayTime < 86400) {
-                        if ($PlayTime < 3600) {
-                           $PlayTimeHR = gmdate("i:s", $PlayTime);
-                        } elseif ($PlayTime < 60) {
-                           $PlayTimeHR = gmdate("s", $PlayTime);
-                        } else {
-                           $PlayTimeHR = gmdate("H:i:s", $PlayTime);
-                        }
-                     } else {
-                        $PlayTimeHR = "00:00:00";
-                     }
-                  } else {
-                     $PlayTime = 0;
-                     $PlayTimeHR = "00:00:00";
-                  }
-
-
-                  $fullartist = $nowfullartist;
-                  $title = $title;
-                  $songtype = "Listener request";
-                  $timestamp = "111111";
-                  $image = "https://radio.ericade.net/radiodb/images/request.jpg";
-                  $about = "A request made by a listener! Go to \"Request a song\" in the menu on our website ericade.radio to make your own request.";
-                  $podcast = "";
-                  $trackid = 0;
-                  $ArtistLongDescription = "Requests are your way to make the station yours! Remember that great tune you heard yesterday? Now you can hear it again.";
-                  $ArtistDescription = "Requests are your way to make the station yours! Remember that great tune you heard yesterday? Now you can hear it again.";
-                  $ProductionNotes = "";
-                  $artisttotalplays = "";
-                  $PlayTimeHR = $PlayTimeHR;
-                  $PlayTime = $Duration;
-                  $timestamphr = "-";
-                  $BroadcastDate = "-";
-                  $isStarable = 0;
-                  $Reason = "";
-                  $titleid = "";
-                  $PodcastURL = "";
-               }
-            } # Else
+            }
          } # $Search == 0.
 
 
@@ -3182,8 +2579,8 @@ class Tracks
 
                # Check the scener to ascertain their existence in the database.
 
-               #echo "checking checkscener...";
-               $ArtistID = checkscener($handle, $TS, $StationID, $Fullartist);
+               #echo "checking CheckArtist...";
+               $ArtistID = CheckArtist($TS, $StationID, $Fullartist);
                #echo "check done...";
 
                # Checking if the artist IS linked to the track
@@ -3228,21 +2625,6 @@ class Tracks
                   }
 
                   updatechangelog($TitleID, $Fullartist, $Title, $TS, $Timestamphr, $Guid,  "Artist change", ("The artist " . $Artist . " for track " . $Title . " (API), " . $DBTitle . " (DB) changed its data and was updated"), $StationID);
-
-                  #echo "Scener: ".$handle;
-                  #echo " Member of the following groups: ";
-                  if (isset($scenergroups[1])) {
-
-
-                     $groups = explode("&#37;5E", $allgroups);
-
-                     foreach ($groups as $group) {
-                        if ($group != "") {
-                           #   echo trim($group).","; 
-                           $action .= checkgroup(trim($group), trim($handle), trim($TS), $ArtistID, $StationID);
-                        }
-                     }
-                  }
                }
                #    echo "<br>";
             }
@@ -3296,8 +2678,8 @@ class Tracks
 
             # Check the scener to ascertain their existence in the database.
 
-            #echo "checking checkscener...";
-            $ArtistID = checkscener($handle, $TS, $StationID, $Fullartist);
+            #echo "checking CheckArtist...";
+            $ArtistID = CheckArtist($TS, $StationID, $Fullartist);
             #echo "check done...";
 
             # Link the title to the respective artist
@@ -3317,18 +2699,6 @@ class Tracks
 
             #echo "Scener: ".$handle;
             #echo " Member of the following groups: ";
-
-
-            if (isset($scenergroups[1])) {
-               $groups = explode("&#37;5E", $allgroups);
-
-               foreach ($groups as $group) {
-                  if ($group != "") {
-                     $action .= checkgroup(trim($group), trim($handle), trim($TS), $ArtistID, $StationID);
-                  }
-               }
-            }
-         }
 
 
          return array("result" => 'TRUE', "message" => 'TRUE', "Submessage" => 'All done');
@@ -3357,27 +2727,10 @@ class Tracks
 
             # Check the scener to ascertain their existence in the database.
 
-            $ArtistID = checkscener($handle, $TS, $StationID, $Fullartist);
+            $ArtistID = CheckArtist($TS, $StationID, $Fullartist);
 
             #echo "Scener: ".$handle;
             #echo " Member of the following groups: ";
-
-            if ($ForceGroupEvaluation == 1) {
-
-               # If set to 1, it will force the scener <-> group mapping to be active. It will put more pressure on the DB as
-               # as group membership will be check even for tracks that already exists. Please use sparingly. Default: 0. Set in config.php.
-
-               if (isset($scenergroups[1])) {
-                  #$groups = preg_split('/\,/', $allgroups);
-                  $groups = explode("&#37;5E", $allgroups);
-                  foreach ($groups as $group) {
-                     if ($group != "") {
-                        #   echo trim($group).","; 
-                        $action .= checkgroup(trim($group), trim($handle), trim($TS), $ArtistID, $StationID);
-                     }
-                  }
-               }
-            }
 
             # Update the track's timestamp
 
@@ -3402,195 +2755,6 @@ class Tracks
 
       return array("result" => 'TRUE', "message" => 'TRUE', "Submessage" => 'Unknown failure.');
    } # Function: updatetracks
-
-
-
-   function updatestar()
-   {
-
-      include '/var/www/html/api.ericade.net/config.php';
-      global $dbht;
-
-      #$guid=checkpassword ($this->Password);
-      $token = validatejwt($this->Password);
-      $gtoken = json_decode($token);
-      if ($gtoken->message == "Access denied.") {
-         return array("result" => 'FALSE', "message" => 'User token invalid or empty.');
-      }
-
-      $browserhash = $gtoken->data->id;
-      $ip = $gtoken->data->ip;
-
-      $todaysdate = date("Y-m-d H:i:s");
-
-      # echo "IP: ".$ip.", *Hash: ".$browserhash;
-
-      # Validate the fields
-      $TrackID = sanitize_numeric_string($this->TrackID, 1, 5);
-      $TrackRating = sanitize_numeric_string($this->TrackRating, 1, 1);
-
-      if ($TrackID == "") {
-         return array("result" => 'FALSE', "message" => 'FALSE', "Submessage" => 'You need to specify a TrackID.');
-      }
-
-      if ($TrackRating == "") {
-         return array("result" => 'FALSE', "message" => 'FALSE', "Submessage" => 'You need to specify a TrackRating.');
-      }
-
-      if ($TrackRating > 5 or $TrackRating < 1) {
-         return array("result" => 'FALSE', "message" => 'FALSE', "Submessage" => 'TrackRating must be between 1 - 5.');
-      }
-
-      # First, check that the trackid does exist.
-      # On pass, proceed. On fail, return RESULT FALSE.
-
-      $sql = "SELECT `id`, `title`, `fullartist`, `StationID`, `Guid` FROM `titles` WHERE id = " . $TrackID . ";";
-      $i = 0;
-
-      #echo $sql; 
-
-      # Protecting against spamming the logic.
-
-      $rndsec = rand(1, 2);
-      $rndsdec = rand(1, 9);
-      $sleeptime = floatval($rndsec . "." . $rndsdec);
-      sleep($sleeptime);
-
-      $timestamp = time();
-
-      $RealName = "";
-      foreach ($dbht->query($sql) as $row) {
-         $i++;
-
-         $Title = $row["title"];
-         $Guid = $row["Guid"];
-         $Fullartist = $row["fullartist"];
-         $RealName = $row["fullartist"] . " - " . $row["title"];
-         $StationID = $row["StationID"];
-      }
-
-      if ($i == 0) {
-         return array("result" => 'FALSE', "message" => 'FALSE', "Submessage" => 'Track/Title does not exist.');
-      }
-
-
-      $sql = "SELECT `id`, `timestamp`, `timestamphr`, `browserhash`, `ip`, `stars` FROM `starlog` WHERE browserhash = '" . $browserhash . "' and trackid = " . $TrackID . " ORDER BY timestamp desc LIMIT 1;";
-      $i = 0;
-
-      $timestamp = 638544250;
-
-      foreach ($dbht->query($sql) as $row) {
-         $timestamp = $row["timestamp"];
-         $i++;
-      }
-
-      # Check if the user has already voted for this star within the GracePeriod and if so, allow them to "change their mind".
-
-      $AllowedChangeTime = 180; # In second how long you may change your mind on a track.
-
-      $now = time();
-
-      if (($now - $timestamp) <= $AllowedChangeTime) {
-         # This means, we'll just change our mind of a track already voted on.
-         # And this will only ever be possible for a limited amount of time after the vote took place $AllowedChangeTime.
-
-
-
-      }
-
-      # Second, check how many time the browser hash has been used the last minute. Lockout if above
-      # On pass, proceed. On fail, return RESULT FALSE.
-
-      $i = 0;
-      $sql = "SELECT id FROM `starlog` WHERE browserhash = '" . $browserhash . "' and (timestamp > UNIX_TIMESTAMP(DATE_SUB(NOW(), INTERVAL 1 MINUTE)))";
-
-      foreach ($dbht->query($sql) as $row) {
-         $i++;
-      }
-
-
-      if ($i > 5) {
-         return array("result" => 'FALSE', "message" => 'FALSE', "Submessage" => 'You may only star 5 items per minute.');
-      }
-
-
-      # Third, step 1, Check when the vote for a track was made. If it's within 60 minutes, we will allow
-      # a browserhash to update a previous rating. If the rating is older, we will go to next step.
-
-
-      $currenttime = time();
-      $Timestamphr = date("Y-m-d H:i:s");
-      $ValidityDays = 3; # Days that must pass before a star may be set again for a certain track from one identified browser. 
-      # Mechanism is not super-secure, but deters script-kiddies from spamming the button through the F12 console.
-
-      $ValidityDaysInEpoch = ($ValidityDays * 86400);
-
-
-      # Third, step 2,  check if the id has been voted for by the browser hash for the last three days.
-      # On pass, proceed. On fail, return RESULT FALSE.
-      /*
-      if (($currenttime - ($AllowedChangeTime*60)) < $timestamp) {
-         # Do nothing as the time has not expired.
-      } elseif (($currenttime - $ValidityDaysInEpoch) < $timestamp) {
-         return array("result" => 'FALSE', "message" => 'FALSE', "Submessage" => 'You may not vote for this track again at this time');
-      }
-*/
-
-      if (($currenttime - $ValidityDaysInEpoch) < $timestamp) {
-         return array("result" => 'FALSE', "message" => 'FALSE', "Submessage" => 'You may not vote for this track again at this time');
-      }
-      # Since we passed the controls, we must now handle the recalculation of the stars.
-
-      # First step is to add it to the starlog table.
-
-      $i = 0;
-      $sql = "INSERT INTO `starlog`(`timestamp`, `timestamphr`, `browserhash`, `ip`, `trackid`, `stars`, `RealName`, `StationID`) VALUES (" . $currenttime . ",'" . $Timestamphr . "','" . $browserhash . "','" . $ip . "'," . $TrackID . "," . $TrackRating . ",'" . $RealName . "'," . $StationID . ")";
-
-      #echo $sql;
-
-      foreach ($dbht->query($sql) as $row) {
-         $i++;
-      }
-
-      # Second is recalculating the composite stars for the track.
-
-
-      $i = 0;
-      $sumrating = 0;
-      $sql = "SELECT stars FROM `starlog` WHERE trackid = " . $TrackID . "";
-
-
-      # echo $sql;
-
-      foreach ($dbht->query($sql) as $row) {
-         $sumrating = $sumrating + $row["stars"];
-         $i++;
-      }
-
-      $compositerating = round(($sumrating / $i), 2);
-      #echo "...".$compositerating;
-
-      $sql = "UPDATE `trackdata` SET `compositerating`=" . $compositerating . ", `voters`=" . $i . " WHERE trackid=" . $TrackID . ";";
-      $i = 0;
-      foreach ($dbht->query($sql) as $row) {
-         $i++;
-      }
-
-      # Third is recalculating the composite stars for the artist.
-
-      $rc = calculateartistcr($TrackID);
-
-      if ($rc == false) {
-         return array("result" => 'FALSE', "message" => 'FALSE', "Submessage" => 'Failed to calculate the composite rating for the artist.');
-      }
-
-
-      updatechangelog($TrackID, $Fullartist, $Title, $currenttime, $Timestamphr, $Guid,  "Star", ($ip . " gave " . $Title . " a " . $row["stars"] . " rating. Total: " . $compositerating . "."), $StationID);
-
-      # And, done....
-
-      return array("result" => 'TRUE', "message" => 'TRUE', "Submessage" => 'Stars updated.');
-   } # Function: updatestar
 
 
 } # Class: Tracks

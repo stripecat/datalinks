@@ -1243,26 +1243,21 @@ function addtotalplay($type, $StationID)
   }
 }
 
-function checkscener($scener, $TS, $StationID, $fullartist)
+function CheckArtist($TS, $StationID, $fullartist)
 {
   include '/var/www/html/api.ericade.net/config.php';
   global $dbht;
 
-  $patterns = array();
-  $patterns[0] = '/\s/';
-  $replacements = array();
-  $replacements[0] = '%20';
-  $scener = preg_replace($patterns, $replacements, $scener);
 
   $fdebug = 0;
 
   if ($fdebug == 1) {
-    echo "\nArtist to check: " . $scener . ".";
+    echo "\nArtist to check: " . $fullartist . ".";
   }
 
   # Check if the artist exists
 
-  $sql = "SELECT t1.id as \"ArtistID\", t1.totalplays as \"ArtistPlay\" FROM artists t1 WHERE t1.artist = '" . $scener . "' and t1.StationID = " . $StationID;
+  $sql = "SELECT t1.id as \"ArtistID\", t1.totalplays as \"ArtistPlay\" FROM artists t1 WHERE t1.artist = '" . $fullartist . "' and t1.StationID = " . $StationID;
 
   $i = 0;
 
@@ -1294,7 +1289,7 @@ function checkscener($scener, $TS, $StationID, $fullartist)
 
     $i = 0;
 
-    $sql = "INSERT INTO artists(artist, lastplayed, totalplays, StationID, EligibilityTime) VALUES ('" . $scener . "','" . $TS . "',1," . $StationID . "," . $TS . ")";
+    $sql = "INSERT INTO artists(artist, lastplayed, totalplays, StationID, EligibilityTime) VALUES ('" . $fullartist . "','" . $TS . "',1," . $StationID . "," . $TS . ")";
 
     foreach ($dbht->query($sql) as $row) {
 
@@ -1327,7 +1322,7 @@ function checkscener($scener, $TS, $StationID, $fullartist)
 
     # Create the artists datablob
 
-    $sql = "INSERT INTO `artistdata`(`artistid`, `artist`, `lastplayed`, `totalplays`, `StationID`, `EligibilityTime`) VALUES (" . $ArtistID . ",'" . $scener . "','" . $TS . "',1," . $StationID . "," . $TS . ")";
+    $sql = "INSERT INTO `artistdata`(`artistid`, `artist`, `lastplayed`, `totalplays`, `StationID`, `EligibilityTime`) VALUES (" . $ArtistID . ",'" . $fullartist . "','" . $TS . "',1," . $StationID . "," . $TS . ")";
 
     foreach ($dbht->query($sql) as $row) {
     }
@@ -1492,189 +1487,6 @@ function calculateartistcr($TrackID)
 
 
   return true;
-}
-
-function checkgroup($group, $handle, $TS, $ArtistID, $StationID)
-{
-  include '/var/www/html/api.ericade.net/config.php';
-  global $dbht;
-
-  $fdebug = 0;
-
-  if ($fdebug == 1) {
-    echo "\nGroup to check: " . $group . ". For artist: " . $handle . " (ArtistID: " . $ArtistID . " and StationID = " . $StationID . ").";
-  }
-
-  # Check if the group exists
-
-  if ($fdebug == 1) {
-    echo "\nChecking if the group exists...";
-  }
-  $sql = "SELECT id as \"GroupID\", totalplays as \"GroupPlay\" FROM groups WHERE `group` = '" . $group . "' and StationID = " . $StationID;
-  #echo $sql;
-  $i = 0;
-
-  $GroupID = "";
-  $TitlePlay = "";
-  $GroupPlay = "";
-
-  foreach ($dbht->query($sql) as $row) {
-
-    $GroupID = $row["GroupID"];
-    $GroupPlay = $row["GroupPlay"];
-
-    $i++;
-  }
-
-  if ($fdebug == 1) {
-    echo "\nChecked if the group exists...";
-  }
-  if ($i == 0) {
-    $GroupExists = 0;
-  } else {
-    $GroupExists = 1;
-  }
-
-  if ($GroupExists == 0) {
-    # Create the group
-    if ($fdebug == 1) {
-      echo "\ngroup does not exist...";
-    }
-
-    $i = 0;
-
-    $sql = "INSERT INTO groups(`group`, lastplayed, totalplays, StationID) VALUES ('" . $group . "','" . $TS . "',1," . $StationID . ")";
-
-    # echo $sql;
-
-    foreach ($dbht->query($sql) as $row) {
-
-      $i++;
-    }
-
-    if ($fdebug == 1) {
-      echo "\nGroup created...";
-    }
-
-
-
-    usleep(250000); # Just to make sure the DB returns a record. Don't want no race-conditions thank you very much.
-
-    # Lookup the newly created group to get the ID to map the song to.
-
-
-
-    if ($fdebug == 1) {
-      echo "\nChecking the the created group...";
-    }
-
-    $i = 0;
-    $GroupID = "";
-
-    $sql = "SELECT id FROM groups WHERE `group` = '" . $group . "' and StationID = " . $StationID;
-
-    foreach ($dbht->query($sql) as $row) {
-
-      $GroupID = $row["id"];
-
-      $i++;
-    }
-
-    if ($fdebug == 1) {
-      echo "\nChecked the just created group's ID It is:" . $GroupID . ".";
-    }
-
-    # Increment total groups played
-    addtotalplay("group", $StationID);
-  }
-
-  # If the artist DOES exist, update the timestamps.
-
-
-  if ($GroupID == 1) {
-
-    if ($fdebug == 1) {
-      echo "\nThe group actually does exist...";
-    }
-
-    $i = 0;
-
-    # Update the artist timestamp.
-
-    $i = 0;
-
-    $sql = "UPDATE groups SET lastplayed=" . $TS . ",totalplays=" . ($GroupPlay + 1) . " WHERE id = " . $GroupID . " and StationID = " . $StationID;
-
-    foreach ($dbht->query($sql) as $row) {
-
-      $i++;
-    }
-
-    # Increment total groups played
-    addtotalplay("group", $StationID);
-
-    if ($fdebug == 1) {
-      echo "\nUpdated the group's timestamp...";
-    }
-
-    #return array("result" => 'TRUE', "message" => 'TRUE', "Submessage" => 'Artist updated and Track was created.'); 
-
-  }
-
-  # We must now check if the Group is linked to the Artist. 
-
-  # Check if the link exists. No assumptions will be made.
-
-  if ($fdebug == 1) {
-    echo "\nChecking the Groups linkage to the artist...";
-  }
-
-  $i = 0;
-
-  $sql = "SELECT id as \"LinkID\",artist,groups FROM artistgroups WHERE groups = " . $GroupID . " AND artist = " . $ArtistID . " and StationID = " . $StationID;
-
-  #echo $sql;
-
-  foreach ($dbht->query($sql) as $row) {
-
-    $i++;
-  }
-
-  if ($i == 0) {
-    $GroupIsLinked = 0;
-  } else {
-    $GroupIsLinked = 1;
-  }
-
-  # If it does, nothing more must be done.
-
-  # If not, it must be created. A group can be linked to more than one artist. Again, make no assumptions!
-
-  if ($GroupIsLinked == 0) {
-
-    if ($fdebug == 1) {
-      echo "\nThe group is not linked to the artist...";
-    }
-
-    $i = 0;
-
-
-    $sql = "INSERT INTO artistgroups (artist, groups, StationID) VALUES (" . $ArtistID . "," . $GroupID . "," . $StationID . ")";
-
-    foreach ($dbht->query($sql) as $row) {
-
-      $i++;
-    }
-
-    if ($fdebug == 1) {
-      echo "\nConnected the group to the artist...";
-    }
-  }
-
-  if ($fdebug == 1) {
-    echo "\nReturning the GroupID: " . $GroupID . "";
-  }
-  return $GroupID;
 }
 
 function CheckEligibility($fullartist, $TitleLastPlayed, $EligibilityTime, $ArtistEligibilityTime, $StationID, $Duration)
