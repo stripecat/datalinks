@@ -81,11 +81,9 @@ class Tracks
    #************************************************************************************
    # getstationstats
 
-
-
    function getstationstats()
    {
-      include '/var/www/html/api.ericade.net/config.php';
+      include '/var/www/html/config.php';
       global $dbht;
 
       if (isset($this->Password)) {
@@ -187,7 +185,7 @@ class Tracks
 
    function getrequeststats()
    {
-      include '/var/www/html/api.ericade.net/config.php';
+      include '/var/www/html/config.php';
       global $dbht;
 
       $token = validatejwt($this->Password);
@@ -318,7 +316,7 @@ class Tracks
    function addrequest()
    {
 
-      include '/var/www/html/api.ericade.net/config.php';
+      include '/var/www/html/config.php';
       global $dbht;
 
       $token = validatejwt($this->Password);
@@ -512,7 +510,7 @@ class Tracks
    function getplayout()
    {
 
-      include '/var/www/html/api.ericade.net/config.php';
+      include '/var/www/html/config.php';
       global $dbht;
 
 
@@ -606,7 +604,7 @@ class Tracks
 
    function getnowplaying()
    {
-      include '/var/www/html/api.ericade.net/config.php';
+      include '/var/www/html/config.php';
       global $dbht;
 
       $guid = checkpassword($this->Password);
@@ -692,7 +690,7 @@ class Tracks
    /** @return string[]  */
    function gettrack()
    {
-      include '/var/www/html/api.ericade.net/config.php';
+      include '/var/www/html/config.php';
       global $dbht;
 
       if (isset($this->Password)) {
@@ -1199,7 +1197,7 @@ class Tracks
    {
       # This function supports dumping the entire track database for the report view.
 
-      include '/var/www/html/api.ericade.net/config.php';
+      include '/var/www/html/config.php';
       global $dbht;
 
       #$guid=checkpassword ($this->Password);
@@ -1376,7 +1374,7 @@ class Tracks
    {
       # This function supports dumping the entire track database for the report view.
 
-      include '/var/www/html/api.ericade.net/config.php';
+      include '/var/www/html/config.php';
       global $dbht;
 
       #$guid=checkpassword ($this->Password);
@@ -1683,7 +1681,7 @@ class Tracks
    /** @return string[]  */
    function getnextrequest()
    {
-      include '/var/www/html/api.ericade.net/config.php';
+      include '/var/www/html/config.php';
       global $dbht;
 
       $guid = checkpassword($this->Password);
@@ -1729,7 +1727,7 @@ class Tracks
    /** @return string[]  */
    function updateplayedrequest()
    {
-      include '/var/www/html/api.ericade.net/config.php';
+      include '/var/www/html/config.php';
       global $dbht;
 
       $guid = checkpassword($this->Password);
@@ -1846,279 +1844,6 @@ class Tracks
       return array("result" => 'TRUE', "message" => 'TRUE', "Submessage" => 'Successfully moved the entry to the PlayedRequests pile.');
    }
 
-   #************************************************************************************
-   # checkifexists
-
-   /** @return string[]  */
-   function checkifexists()
-   {
-      include '/var/www/html/api.ericade.net/config.php';
-      global $dbht;
-
-      $guid = checkpassword($this->Password);
-      if ($guid == FALSE) {
-         return array("result" => 'FALSE', "message" => 'FALSE', "Submessage" => 'Missing or incorrect password.');
-      }
-
-      $todaysdate = date("Y-m-d H:i:s");
-
-
-      if (isset($this->OriginalFileName)) {
-         $OriginalFileName = sanitize_filename_string($this->OriginalFileName, 1, 455);
-      } else {
-         $OriginalFileName =  "";
-      }
-
-      $OriginalFileName = str_replace(" ", "&#37;20", $OriginalFileName);
-      $OriginalFileName = str_replace(",", "&#37;2C", $OriginalFileName);
-
-
-      if (isset($this->StationID)) {
-         $StationID = sanitize_numeric_string($this->StationID, 1, 5);
-      } else {
-         $StationID =  "";
-      }
-
-      if ($StationID == "") {
-         return array("result" => 'FALSE', "message" => 'FALSE', "Submessage" => 'StationID must be specified.');
-      }
-
-      # Check if the specified track exists on this station.
-
-      # $sql = "SELECT `id`, `TrackID`, `StationID`, `title`, `fullartist`, `Guid`, `lastplayed`, `Duration`, `greeting`, `nameofrequester`, `Path`, `Source`, `CueIn`, `CueOut` FROM `QueuedRequests` WHERE StationID = " . $StationID . " AND Album like '%" . $OriginalFileName . "%'";
-
-      $sql = "SELECT `id`, `title`, `lastplayed`, `totalplays`, `fullartist`, `artist`, `lastplayedhr`, `trackid`, `Comments`, `Album`, `Genre`, `Guid`, `Year`, `Duration`, `OutCue`, `Tags`, `Disabled`, `Type`, `Intro`, `CueIn`, `CueOut`, `Added`, `Sweeper`, `NoFade`, `ValidFrom`, `Expires`, `Path`, `Segue`, `StationID`, `EligibilityTime`, `ArtistEligibilityTime`, `CreationDate`, `CreationDateHr` FROM `titles` WHERE StationID = " . $StationID . " AND Album like '%" . $OriginalFileName . "%'";
-
-      $i = 0;
-
-
-
-      foreach ($dbht->query($sql) as $row) {
-
-         $id = $row["id"];
-
-         $i++;
-      }
-
-      if ($i == 0) {
-         return array("result" => 'FALSE', "message" => 'FALSE', "Submessage" => 'Does not exist on the station');
-      } else if ($i > 1) {
-         return array("result" => 'FALSE', "message" => 'FALSE', "Submessage" => 'More than one track matched the search string please narrow your search.');
-      }
-
-
-      # Return ok.
-
-      return array("result" => 'TRUE', "message" => 'TRUE', "Submessage" => 'File does exist on the station.');
-   }
-
-   #************************************************************************************
-   # RepairDBTracking
-
-   /** @return string[]  */
-   function RepairDBTracking()
-   {
-
-      die("Turned off at this stage");
-
-      include '/var/www/html/api.ericade.net/config.php';
-      global $dbht;
-
-      $fdebug = 0;
-
-      $guid = checkpassword($this->Password);
-      if ($guid == FALSE) {
-         return array("result" => 'FALSE', "message" => 'FALSE', "Submessage" => 'Missing or incorrect password.');
-      }
-
-      $todaysdate = date("Y-m-d H:i:s");
-
-      # Validate the fields
-
-      # This mechanism will update the database consistency by traversing and repairing links after a DB-rebuild
-
-      $StationID = 1; # Hardcoded to station 1 for the time being.
-
-      /*
-      # Stage 1 - Repair artist details.
-
-      # The assumption is that all artist<->linktable<->artist mappings work.
-      # This will automatically happen after a rebuild, so no need to do anything about that.
-
-      # This system will enumerate all artist details and check that they're properly linked up to titles.
-      # After a rebuild, new, empty artistdata will exist and must be removed and the linkage must be reestablished.
-
-      # First we scan through all artistdata-fields that hold data.
-
-      $sql = "SELECT `id`, `artistid`, `artist`, `ShortDescription`, `LongDescription`, `totalplays`, `lastplayed`, `compositerating`, `voters`, `demozoo`, `wikipedia`,
-       `csdb`, `otherurl`, `modarchive`, `bandcamp`, `soundcloud`, `Guid`, `StationID`, `EligibilityTime` FROM `artistdata` WHERE (ShortDescription <> 'No data' or ShortDescription <> '') and StationID = " . $StationID . "";
-
-      $i = 0;
-
-      foreach ($dbht->query($sql) as $row) {
-         $i++;
-
-         $OldID = $row["id"];
-         $OldArtistID = $row["artistid"]; # The artist-id that is valid
-         $OldArtist = $row["artist"];
-         $OldArtist = $row["artist"];
-         $OldDesc = $row["ShortDescription"];
-
-
-         # For each entry, we must look for another newer entry that has superceeded it.
-
-         $dsql = "SELECT `id`, `artistid`, `artist`, `ShortDescription`, `LongDescription`, `totalplays`, `lastplayed`, `compositerating`, `voters`, `demozoo`, `wikipedia`,
-         `csdb`, `otherurl`, `modarchive`, `bandcamp`, `soundcloud`, `Guid`, `StationID`, `EligibilityTime` FROM `artistdata` WHERE (artist = '" . $row["artist"] . "' and StationID = " . $StationID . ") and id != " . $OldID . "";
-
-         $j = 0;
-         foreach ($dbht->query($dsql) as $drow) {
-
-            $NewID = $drow["id"];
-            $NewArtistID = $drow["artistid"]; # The artist-id that is broken
-            $NewDesc = $drow["ShortDescription"];
-
-            # First we validate that the other entry is empty, as it's dangerious to reconnect the wrong one.
-
-            $j++;
-
-            $cont = 0;
-
-            if ($drow["ShortDescription"] != "No data") {
-               echo "The artist " . $OldArtist . " (Old " . $OldArtistID . ". New: " . $NewArtistID . ") seem to have two entries. Please investigate.\n";
-               echo "\n";
-               $cont = 1;
-               continue;
-            }
-         }
-
-         if (
-            $cont == 1
-         ) {
-            continue;
-         }
-
-         if ($j == 0) {
-            echo "No remapping is needed for " . $OldArtist . " (Old " . $OldArtistID . ". New: " . $NewArtistID . ").\n";
-            echo "\n";
-            continue;
-         }
-
-         # Remapping!
-
-         echo "For " . $OldArtist . ":\n";
-         echo "Old details (" . $OldID . ") " . $OldDesc . ". New details (" . $NewID . ") " . $NewDesc . ".\n";
-         #  Old details (3344) No data. New details (5002) No data.
-
-         if ($OldDesc == $NewDesc) {
-
-            if ($NewID > $OldID) {
-               $DeleteEntry = $OldID;
-            } else {
-               $DeleteEntry = $NewID;
-            }
-            echo "Same content, deleting the old entry " . $DeleteEntry . ".\n";
-
-
-            $osql = "DELETE from `artistdata` WHERE id = " . $DeleteEntry .  ";";
-
-            # $rc=$dbht->query($osql);
-         } else {
-            echo "Remapping " . $OldArtist . " from " . $OldArtistID . " to " . $NewArtistID . ".\n";
-            echo "For " . $OldArtist . " - Keeping " . $OldID . " and deleting " . $NewID . ".\n";
-
-            # Delete $NewID
-
-            $osql = "DELETE from `artistdata` WHERE id = " . $NewID .  ";";
-
-            # $rc=$dbht->query($osql);
-
-            # On $OldID, Map artistid to $NewArtistID
-
-            $osql = "UPDATE `artistdata` SET `artistid`=" . $NewArtistID . " WHERE id = " . $OldID;
-            #   $rc=$dbht->query($osql);
-
-         }
-         echo "\n";
-      } */
-
-      # Stage 2 - Repair the starring system
-
-      # This stage remaps stars to their corresponding titles. This will make star-calculations work and calculate correctly.
-
-
-      $sql = "SELECT `id`, `timestamp`, `timestamphr`, `browserhash`, `ip`, `trackid`, `stars`, `RealName`, `StationID` FROM `starlog` WHERE StationID = " . $StationID;
-      $i = 0;
-
-      foreach ($dbht->query($sql) as $row) {
-
-         $currentid = $row["id"];
-         $currenttrackid = $row["trackid"];
-         $RealName = explode(" - ", $row["RealName"]);
-
-         $currenttrackartist = $RealName[0];
-         $currenttracktitle = $RealName[1];
-
-         $osql = "SELECT `id`, `title`, `lastplayed`, `totalplays`, `fullartist`, `artist`, `lastplayedhr`, `trackid`, `Comments`, `Album`, `Genre`, `Guid`, `Year`, 
-      `Duration`, `OutCue`, `Tags`, `Disabled`, `Type`, `Intro`, `CueIn`, `CueOut`,
-      `Added`, `Sweeper`, `NoFade`, `ValidFrom`, `Expires`, `Path`, `Segue`, `StationID`, `EligibilityTime`, `ArtistEligibilityTime` FROM `titles` WHERE title = '" . $currenttracktitle . "' and fullartist = '" . $currenttrackartist . "'";
-
-         echo "Mapping artist " . $currenttrackartist . " with title " . $currenttracktitle . "\n";
-
-         foreach ($dbht->query($osql) as $orow) {
-
-            $realtrackid = $orow["id"];
-
-            echo "Old trackid: " . $currenttrackid . ". Corresponding trackid: " . $realtrackid . ".\n";
-
-            if ($currenttrackid == $realtrackid) {
-               echo ">>> Starring is correctly setup for " . $currenttrackartist . " with title " . $currenttracktitle . "\n\n";
-            } else {
-               echo "*** Will set " . $currenttrackartist . " with title " . $currenttracktitle . " to " . $realtrackid . "\n\n";
-
-               $isql = "UPDATE `starlog` SET trackid = " . $realtrackid . " WHERE id=" . $currentid;
-
-
-               $rc = $dbht->query($isql);
-            }
-         }
-      }
-
-      # Recalculate the stars.
-
-      $ssql = "SELECT DISTINCT trackid FROM `starlog`";
-
-      foreach ($dbht->query($ssql) as $srow) {
-
-         $TrackID = $srow["trackid"];
-
-         # Second is recalculating the composite stars for the track.
-
-         $i = 0;
-         $sumrating = 0;
-         $sql = "SELECT stars FROM `starlog` WHERE trackid = " . $TrackID . "";
-
-         foreach ($dbht->query($sql) as $row) {
-            $sumrating = $sumrating + $row["stars"];
-            $i++;
-         }
-
-         $compositerating = round(($sumrating / $i), 2);
-         #echo "...".$compositerating;
-
-         $sql = "UPDATE `trackdata` SET `compositerating`=" . $compositerating . ", `voters`=" . $i . " WHERE trackid=" . $TrackID . ";";
-         $i = 0;
-         foreach ($dbht->query($sql) as $row) {
-            $i++;
-         }
-
-         # Third is recalculating the composite stars for the artist.
-
-         $rc = calculateartistcr($TrackID);
-      }
-
-
-      return array("result" => 'TRUE', "message" => 'TRUE', "Submessage" => 'Unknown failure.');
-   } # Function: RepairDBTracking
 
 
    #************************************************************************************
@@ -2127,7 +1852,7 @@ class Tracks
    /** @return string[]  */
    function updatetrack()
    {
-      include '/var/www/html/api.ericade.net/config.php';
+      include '/var/www/html/config.php';
       global $dbht;
 
       $fdebug = 0;
@@ -2756,3 +2481,4 @@ class Tracks
 
 
 } # Class: Tracks
+}

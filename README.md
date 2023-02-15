@@ -84,7 +84,7 @@ Unpack the zipfile from Github. Omit the folder called "Frontend" and the file c
 
 Recommendation: make sure your IDE (development console) knows about PHP. This makes it easy not to break stuff.
 
-Search for "/var/www/html/api.ericade.net/" in all .php-files and replace it with your own path on all php-files. If you're not sure what the path is, navigate to the folder that you put all the files for the api. Then type in pwd. This will give you information. I will try to fix a better solution for this in the future. Sorry, a bit of lazy coding :)
+Search for "/var/www/html/" in all .php-files and replace it with your own path on all php-files. If you're not sure what the path is, navigate to the folder that you put all the files for the api. Then type in pwd. This will give you information. I will try to fix a better solution for this in the future. Sorry, a bit of lazy coding :)
 
 Set a good password in the config-file.
 

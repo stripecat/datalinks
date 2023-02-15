@@ -18,7 +18,7 @@ class Database {
     public function getConnection()
     {
         $this->conn = null;
- include '/var/www/html/api.ericade.net/config.php';
+ include '/var/www/html/config.php';
         try{
             $this->conn = new PDO("mysql:host=" . $dbhost  . ";dbname=" . $dbname, $dbuser, $dbpasswd);
             $this->conn->exec("set names utf8");

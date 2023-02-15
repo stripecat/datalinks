@@ -7,13 +7,13 @@ $dbhost = 'localhost';
 $dbport = '';
 $dbname = 'RadioAPI';
 $dbuser = 'radio';
-$dbpasswd = 'cdE#4rFVbgT%';
+$dbpasswd = 'Password123';
 $debugmode = 1; # Probably not in use.
 $syspath = "/var/www/html/";
 
 # Password authentication for the PlayIt Live JSON.
 
-$apipwd="zaQ!2wSXcdE#"; # Only for ingest!
+$apipwd="cdE#4rFVbgT%"; # Only for ingest!
 # JWT
 # This is used for external communication to identify the browser and ensure its
 # temporary id without storing cookies. Not a ID or security mechanism.
@@ -31,7 +31,7 @@ $maxticketoffset = 0; # Probably not needed. Ticket replay protection is kinda p
 # Inclusion
 
 $InternalIPRanges = array("192.168.74.0/24","192.168.1.0/24","192.168.42.0/24"); # IPs considered internal to the station's physical location. Used by some filters.
-$InternalIngestIPRanges = array("192.168.74.0/24"); # IPs allowed to send track updates to the API.
+$InternalIngestIPRanges = array("192.168.74.0/24","192.168.181.0/24"); # IPs allowed to send track updates to the API.
 
 # Exclusion
 

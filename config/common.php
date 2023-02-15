@@ -1,5 +1,5 @@
 <?php
-include '/var/www/html/api.ericade.net/config.php';
+include '/var/www/html/config.php';
 
 # Initialize JWT.
 
@@ -607,7 +607,7 @@ function PurgeOldEpisodes($days)
 
   # Only supported on station 1 for obvious reasons.
 
-  require '/var/www/html/api.ericade.net/config.php';
+  require '/var/www/html/config.php';
   global $dbht;
 
   $i = 0;
@@ -747,7 +747,7 @@ function PurgeOldEpisodes($days)
 function PopulateTrackerTypes()
 {
 
-  require '/var/www/html/api.ericade.net/config.php';
+  require '/var/www/html/config.php';
   global $dbht;
 
 
@@ -893,7 +893,7 @@ function convertplain($in)
 function checkpassword($password)
 {
 
-  include '/var/www/html/api.ericade.net/config.php';
+  include '/var/www/html/config.php';
   if ($password == $apipwd) {
     return TRUE;
   } else {
@@ -944,7 +944,7 @@ function validateaccess($token)
 function validatejwt($token)
 {
   #global $guid,$db,$database;
-  require '/var/www/html/api.ericade.net/config.php';
+  require '/var/www/html/config.php';
   # Get the token and sanitize it.
 
   $token = sanitize_jwt_string($token, 1, 900);
@@ -1245,7 +1245,7 @@ function addtotalplay($type, $StationID)
 
 function CheckArtist($TS, $StationID, $fullartist)
 {
-  include '/var/www/html/api.ericade.net/config.php';
+  include '/var/www/html/config.php';
   global $dbht;
 
 
@@ -1382,7 +1382,7 @@ function CheckArtist($TS, $StationID, $fullartist)
 
 function updateplayout($TrackID, $Fullartist, $Title, $TS, $Timestamphr, $Guid, $StationID)
 {
-  include '/var/www/html/api.ericade.net/config.php';
+  include '/var/www/html/config.php';
   global $dbht;
 
   $i = 0;
@@ -1399,7 +1399,7 @@ function updateplayout($TrackID, $Fullartist, $Title, $TS, $Timestamphr, $Guid, 
 
 function updatechangelog($TrackID, $Fullartist, $Title, $TS, $Timestamphr, $Guid,  $action, $logtext, $StationID)
 {
-  include '/var/www/html/api.ericade.net/config.php';
+  include '/var/www/html/config.php';
   global $dbht;
 
   $i = 0;
@@ -1418,7 +1418,7 @@ function updatechangelog($TrackID, $Fullartist, $Title, $TS, $Timestamphr, $Guid
 function calculateartistcr($TrackID)
 {
 
-  include '/var/www/html/api.ericade.net/config.php';
+  include '/var/www/html/config.php';
   global $dbht;
 
   # First we must list all artist connected to a certain track. 
@@ -1492,7 +1492,7 @@ function calculateartistcr($TrackID)
 function CheckEligibility($fullartist, $TitleLastPlayed, $EligibilityTime, $ArtistEligibilityTime, $StationID, $Duration)
 {
 
-  include '/var/www/html/api.ericade.net/config.php';
+  include '/var/www/html/config.php';
   global $dbht;
 
   $fdebug = 0;
@@ -1668,7 +1668,7 @@ function ip_in_range($ip, $range)
 
 function getip($ip)
 {
-  include '/var/www/html/api.ericade.net/config.php';
+  include '/var/www/html/config.php';
   global $dbht;
 
   # This function is meant to lookup IPs from the IP-cache.
@@ -1722,7 +1722,7 @@ function getip($ip)
 
 function checkip($ip, $Country, $Regionname, $Isp, $City, $Timestamp, $Timestamphr, $Zip)
 {
-  include '/var/www/html/api.ericade.net/config.php';
+  include '/var/www/html/config.php';
   global $dbht;
 
   # This function is meant to cache ip to City/Country mappings as these are 
