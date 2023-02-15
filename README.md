@@ -88,8 +88,12 @@ Search for "/var/www/html/api.ericade.net/" in all .php-files and replace it wit
 
 Set a good password in the config-file.
 
+# Setting on your PlayIT Live host
+
 Copy the text hereunder and use it in the "Now playing"-plugin to create the caller function for the whole setup. 
 To do so, select the HTTPWebRequest tab, set it to send POST and past it into POST-body. No need to fill in any login information.
+
+Please make sure the password you use for the API-calls and for the database are not the same.
 
 ```
 {
