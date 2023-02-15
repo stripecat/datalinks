@@ -2692,8 +2692,6 @@ class Tracks
             $i = 0;
 
             foreach ($dbht->query($sql) as $row) {
-
-
                $i++;
             }
 

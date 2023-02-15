@@ -46,9 +46,39 @@ Running the frontend and the api on different computers is possible. But the com
 
 # The Internet facing API
 
-Import the table-file call extras/RadioAPI.sql from the Github clone into MariaDB or Mysql. This will create an empty tablestructure in a database called RadioAPI. Create a user with full permissions to the database with mysql -u root. No superdbuserprivileges is needed for the API. Just all commands (SELECT, INSERT, UPDATE and DELETE).
+Import the table-file call extras/RadioAPI.sql from the Github clone into MariaDB or Mysql. 
 
-Make sure you have a vhost for the API under Apache2 or Nginx. This vhost must have a DNS setup, pointing to it. Mine is called api.ericade.net and I use Certbot to get free certificates from Letsencrypt. How to set this up is out of the scope of this discussion. You don't have to have https enabled, but it's not recommended to run only http. In reality, HTTPS is pretty mandatory as Google lowers rankings for site without it.
+```
+Easiest way:
+mysql -u root < RadioAPI.sql
+```
+
+This will create an empty tablestructure in a database called RadioAPI. Create a user with full permissions to the database with mysql -u root. 
+ 
+```
+CREATE USER radio@localhost IDENTIFIED BY 'cdE#4rFVbgT%';
+```
+
+(Don't use that particular password. Also remember it must be added to config.php in the API-website.)
+
+Then grant the permissions to the user.
+No superdbuser privileges are needed for the API. Just all commands (SELECT, INSERT, UPDATE and DELETE).
+
+```
+GRANT ALL ON 'RadioDB'.* TO radio@localhost;
+```
+
+ And to activate the privileges in the database.
+
+```
+FLUSH PRIVILEGES;
+```
+
+Remember to go into config.php and update the database settings.
+
+## The Virtual host
+
+Make sure you have a vhost for the API under Apache2 or Nginx. This vhost must have a DNS setup, pointing to it. Mine is called api.ericade.net and I use Certbot to get free certificates from Letsencrypt. How to set this up is out of the scope of this discussion. You don't have to have https enabled, but it's not recommended to run only http. In reality, HTTPS is pretty mandatory as Google lowers rankings for site without it. Also the API cannot be httponly, if the site generating the calls has https.
 
 Unpack the zipfile from Github. Omit the folder called "Frontend" and the file called "templatedata.sql". The index.htm should be in the root. Now open the config.php and configure the database-settings. The configfile is self-explanatory. Please go through the config-file and set it as needed.
 
