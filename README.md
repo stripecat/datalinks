@@ -65,7 +65,7 @@ Then grant the permissions to the user.
 No superdbuser privileges are needed for the API. Just all commands (SELECT, INSERT, UPDATE and DELETE).
 
 ```
-GRANT ALL ON 'RadioDB'.* TO radio@localhost;
+GRANT ALL ON RadioAPI.* TO radio@localhost;
 ```
 
  And to activate the privileges in the database.

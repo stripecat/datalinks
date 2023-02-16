@@ -2111,7 +2111,7 @@ class Tracks
 
          $sql = "INSERT INTO titles(title, lastplayed, totalplays, fullartist, CreationDate, CreationDateHR, lastplayedhr,Comments,Album,Genre,`Year`,`Guid`,`Duration`,`OutCue`,`Tags`,`Disabled`,`Type`,`Intro`,`CueIn`,`CueOut`,`Added`,`Sweeper`,`NoFade`,`ValidFrom`,`Expires`,`Path`,`Segue`,`StationID`,`EligibilityTime`) VALUES ('" . $Title . "'," . $TS . ",1,'" . $Fullartist . "'," . $todaysepoch . ",'" . $todaysdate . "','" . $Timestamphr . "','" . $Comments . "','" . $Album . "','" . $Genre . "','" . $Year . "','" . $Guid . "'," . $Duration . "," . $OutCue . ",'" . $Tags . "','" . $Disabled . "','" . $Type . "'," . $Intro . "," . $CueIn . "," . $CueOut . ",'" . $Added . "','" . $Sweeper . "','" . $NoFade . "','" . $ValidFrom . "','" . $Expires . "','" . $Path . "','" . $Segue . "'," . $StationID . "," . $TS . ")";
          # mail("erik@zalitis.se","Encoding",$sql);
-         #  echo $sql;
+           echo $sql;
          #mail("erik@zalitis.se","Encoding",$sql);
 
          foreach ($dbht->query($sql) as $row) {
