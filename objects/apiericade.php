@@ -344,7 +344,7 @@ class Tracks
       /* if ($Requester == "") {
          return array("result" => 'FALSE', "message" => 'FALSE', "Submessage" => 'You need to type in your name.');
       }
-*/
+      */
 
       if ($TrackID == "") {
          return array("result" => 'FALSE', "message" => 'FALSE', "Submessage" => 'You need to specify a TrackID.');
@@ -2425,9 +2425,10 @@ class Tracks
 
 
          return array("result" => 'TRUE', "message" => 'TRUE', "Submessage" => 'All done');
-      }
-      #echo "Track exists? ".$TrackExists;
-      if ($TrackExists == 1) {
+            }  
+         }  
+         #echo "Track exists? ".$TrackExists;
+         if ($TrackExists == 1) {
 
          # We will have to check the artist every playtime, otherwise EligibilityTime does not update.
          # This means the request system cannot filter out artists properly.
@@ -2474,11 +2475,13 @@ class Tracks
          #  }
 
          return array("result" => 'TRUE', "message" => 'TRUE', "Submessage" => 'All done.');
-      }
+         }
 
-      return array("result" => 'TRUE', "message" => 'TRUE', "Submessage" => 'Unknown failure.');
-   } # Function: updatetracks
+         return array("result" => 'TRUE', "message" => 'TRUE', "Submessage" => 'Unknown failure.');
+      } # Function: updatetrack
 
 
+   
 } # Class: Tracks
-}
+
+?>
