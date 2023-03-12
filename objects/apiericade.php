@@ -190,6 +190,9 @@ class Tracks
 
       $token = validatejwt($this->Password);
       $gtoken = json_decode($token);
+
+//echo print_r ($gtoken);
+
       $browserhash = $gtoken->data->id;
       $ip = $gtoken->data->ip;
 

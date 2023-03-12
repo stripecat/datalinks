@@ -3,7 +3,7 @@
 # JWT
  
 // variables used for jwt
-$apikeyseed = 'fdVw38cpvY7eS72b1t4e';
+$apikeyseed = 'Apiseedpassword123';
 $iss = 'http://example.org';
 $aud = 'http://example.com';
 $iat = 1356999524;

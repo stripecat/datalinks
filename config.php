@@ -8,19 +8,20 @@ $dbport = '';
 $dbname = 'RadioAPI';
 $dbuser = 'radio';
 $dbpasswd = 'Password123';
-$debugmode = 1; # Probably not in use.
+$debugmode = 0; # Probably not in use.
 $syspath = "/var/www/html/";
 
-# Password authentication for the PlayIt Live JSON.
-
+# Password authentication for the PlayIt Live "Now playing" plugin.
 $apipwd="cdE#4rFVbgT%"; # Only for ingest!
+
 # JWT
 # This is used for external communication to identify the browser and ensure its
 # temporary id without storing cookies. Not a ID or security mechanism.
 # Only used to deter people from cheating with stars and requests.
 # What? You don't think people cheat? What planet are you from?
 
-$apikeyseed = '<<Password>>'; # Super-secret password for the ticket encryption. Change before deploying.
+$apikeyseed = 'Apiseedpassword123'; # Super-secret password for the ticket encryption. Change before deploying.
+                                    # The password should also be typed into the config.php on the front end.
 
 # Throttling for SQL-queries for the report-APIs.
 
@@ -42,7 +43,7 @@ $Stations = array(
         ("stationid") => 1, # A number, defining the station. Must be unique, but no need to have it in a specific order. Use numbers between 0-99.
         ("AllowRequests") => 1, # If the station will allow requests. 0 = No, 1 = Yes.
         ("RequestPrefix") => array("listener-request"), # Prefix for the request song. Will be shown before the Artistname in the artistfield. It must specified in FilteredArtistsFromIngest as well.
-        ("StationName") => '24/7 tracked music', # The name of the station.
+        ("StationName") => '24/7 hits from the 60s', # The name of the station.
         ("StreamingOffset") => 10, # The feed to the shoutcast-system can have the change of songs delayed in order to compensate for the buffering. In seconds.
         ("TrackPurgeAllowed") => 1, # Allow tracks not played to be purged. Not implemented yet.
         ("PurgeDays") => 21, # How many days a track must not have been played to be purged. Not implemented yet.
@@ -60,14 +61,5 @@ $Stations = array(
         ("PurgeProtectedArtists") => array("jingles","ericade.radio","announcement","advert") # Will not ever have their tracks removed due to not being played. All artists must be in lower case.
     )
 );
-
-# Misc stuff.
-
-# The different paths for the podcast episodes.
-
-$newstem = "https://radio.ericade.net/Flashback/";
-$oldstem = "https://radio.ericade.net/AmigaFlashback/";
-$newfstem = "/var/www/html/radio.ericade.net/Flashback/";
-$oldfstem = "/var/www/html/radio.ericade.net/AmigaFlashback/";
 
 ?>

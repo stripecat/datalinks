@@ -1,13 +1,13 @@
 <html>
 
 <head>
-    <script type="text/javascript" src="https://api.ericade.net/scripts/get-jwt.js"></script>
-    <script type="text/javascript" src="https://api.ericade.net/scripts/base_functions.js"></script>
-    <script src="https://radio.ericade.net/radiodb/js/vue-toast-notification.js"></script>
-    <link href="https://radio.ericade.net/radiodb/css/theme-sugar.css" rel="stylesheet">
-    <script src="https://radio.ericade.net/js/vue-multiselect.min.js"></script>
-    <link rel="stylesheet" href="https://radio.ericade.net/js/vue-multiselect.min.css">
-    <script src="https://radio.ericade.net/js/vue.js"></script>
+    <script type="text/javascript" src="/js/get-jwt.js"></script>
+    <script type="text/javascript" src="/js/base_functions.js"></script>
+    <script src="/js/vue-toast-notification.js"></script>
+    <link href="/css/theme-sugar.css" rel="stylesheet">
+    <script src="/js/vue-multiselect.min.js"></script>
+    <link rel="stylesheet" href="/js/vue-multiselect.min.css">
+    <script src="/js/vue.js"></script>
 
     <style>
         .loader {
@@ -110,211 +110,7 @@
             text-transform: uppercase;
         }
 
-        /* cyrillic-ext */
-        @font-face {
-            font-family: 'Open Sans';
-            font-style: normal;
-            font-weight: 400;
-            font-stretch: normal;
-            font-display: swap;
-            src: url(https://radio.ericade.net/wp-content/fonts/open-sans/memSYaGs126MiZpBA-UvWbX2vVnXBbObj2OVZyOOSr4dVJWUgsjZ0B4taVQUwaEQXjN_mQ.woff) format('woff');
-            unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
-        }
-
-        /* cyrillic */
-        @font-face {
-            font-family: 'Open Sans';
-            font-style: normal;
-            font-weight: 400;
-            font-stretch: normal;
-            font-display: swap;
-            src: url(https://radio.ericade.net/wp-content/fonts/open-sans/memSYaGs126MiZpBA-UvWbX2vVnXBbObj2OVZyOOSr4dVJWUgsjZ0B4kaVQUwaEQXjN_mQ.woff) format('woff');
-            unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
-        }
-
-        /* greek-ext */
-        @font-face {
-            font-family: 'Open Sans';
-            font-style: normal;
-            font-weight: 400;
-            font-stretch: normal;
-            font-display: swap;
-            src: url(https://radio.ericade.net/wp-content/fonts/open-sans/memSYaGs126MiZpBA-UvWbX2vVnXBbObj2OVZyOOSr4dVJWUgsjZ0B4saVQUwaEQXjN_mQ.woff) format('woff');
-            unicode-range: U+1F00-1FFF;
-        }
-
-        /* greek */
-        @font-face {
-            font-family: 'Open Sans';
-            font-style: normal;
-            font-weight: 400;
-            font-stretch: normal;
-            font-display: swap;
-            src: url(https://radio.ericade.net/wp-content/fonts/open-sans/memSYaGs126MiZpBA-UvWbX2vVnXBbObj2OVZyOOSr4dVJWUgsjZ0B4jaVQUwaEQXjN_mQ.woff) format('woff');
-            unicode-range: U+0370-03FF;
-        }
-
-        /* hebrew */
-        @font-face {
-            font-family: 'Open Sans';
-            font-style: normal;
-            font-weight: 400;
-            font-stretch: normal;
-            font-display: swap;
-            src: url(https://radio.ericade.net/wp-content/fonts/open-sans/memSYaGs126MiZpBA-UvWbX2vVnXBbObj2OVZyOOSr4dVJWUgsjZ0B4iaVQUwaEQXjN_mQ.woff) format('woff');
-            unicode-range: U+0590-05FF, U+20AA, U+25CC, U+FB1D-FB4F;
-        }
-
-        /* vietnamese */
-        @font-face {
-            font-family: 'Open Sans';
-            font-style: normal;
-            font-weight: 400;
-            font-stretch: normal;
-            font-display: swap;
-            src: url(https://radio.ericade.net/wp-content/fonts/open-sans/memSYaGs126MiZpBA-UvWbX2vVnXBbObj2OVZyOOSr4dVJWUgsjZ0B4vaVQUwaEQXjN_mQ.woff) format('woff');
-            unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+1EA0-1EF9, U+20AB;
-        }
-
-        /* latin-ext */
-        @font-face {
-            font-family: 'Open Sans';
-            font-style: normal;
-            font-weight: 400;
-            font-stretch: normal;
-            font-display: swap;
-            src: url(https://radio.ericade.net/wp-content/fonts/open-sans/memSYaGs126MiZpBA-UvWbX2vVnXBbObj2OVZyOOSr4dVJWUgsjZ0B4uaVQUwaEQXjN_mQ.woff) format('woff');
-            unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
-        }
-
-        /* latin */
-        @font-face {
-            font-family: 'Open Sans';
-            font-style: normal;
-            font-weight: 400;
-            font-stretch: normal;
-            font-display: swap;
-            src: url(https://radio.ericade.net/wp-content/fonts/open-sans/memSYaGs126MiZpBA-UvWbX2vVnXBbObj2OVZyOOSr4dVJWUgsjZ0B4gaVQUwaEQXjM.woff) format('woff');
-            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-        }
-
-        /* cyrillic-ext */
-        @font-face {
-            font-family: 'Open Sans';
-            font-style: normal;
-            font-weight: 700;
-            font-stretch: normal;
-            font-display: swap;
-            src: url(https://radio.ericade.net/wp-content/fonts/open-sans/memSYaGs126MiZpBA-UvWbX2vVnXBbObj2OVZyOOSr4dVJWUgsg-1x4taVQUwaEQXjN_mQ.woff) format('woff');
-            unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
-        }
-
-        /* cyrillic */
-        @font-face {
-            font-family: 'Open Sans';
-            font-style: normal;
-            font-weight: 700;
-            font-stretch: normal;
-            font-display: swap;
-            src: url(https://radio.ericade.net/wp-content/fonts/open-sans/memSYaGs126MiZpBA-UvWbX2vVnXBbObj2OVZyOOSr4dVJWUgsg-1x4kaVQUwaEQXjN_mQ.woff) format('woff');
-            unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
-        }
-
-        /* greek-ext */
-        @font-face {
-            font-family: 'Open Sans';
-            font-style: normal;
-            font-weight: 700;
-            font-stretch: normal;
-            font-display: swap;
-            src: url(https://radio.ericade.net/wp-content/fonts/open-sans/memSYaGs126MiZpBA-UvWbX2vVnXBbObj2OVZyOOSr4dVJWUgsg-1x4saVQUwaEQXjN_mQ.woff) format('woff');
-            unicode-range: U+1F00-1FFF;
-        }
-
-        /* greek */
-        @font-face {
-            font-family: 'Open Sans';
-            font-style: normal;
-            font-weight: 700;
-            font-stretch: normal;
-            font-display: swap;
-            src: url(https://radio.ericade.net/wp-content/fonts/open-sans/memSYaGs126MiZpBA-UvWbX2vVnXBbObj2OVZyOOSr4dVJWUgsg-1x4jaVQUwaEQXjN_mQ.woff) format('woff');
-            unicode-range: U+0370-03FF;
-        }
-
-        /* hebrew */
-        @font-face {
-            font-family: 'Open Sans';
-            font-style: normal;
-            font-weight: 700;
-            font-stretch: normal;
-            font-display: swap;
-            src: url(https://radio.ericade.net/wp-content/fonts/open-sans/memSYaGs126MiZpBA-UvWbX2vVnXBbObj2OVZyOOSr4dVJWUgsg-1x4iaVQUwaEQXjN_mQ.woff) format('woff');
-            unicode-range: U+0590-05FF, U+20AA, U+25CC, U+FB1D-FB4F;
-        }
-
-        /* vietnamese */
-        @font-face {
-            font-family: 'Open Sans';
-            font-style: normal;
-            font-weight: 700;
-            font-stretch: normal;
-            font-display: swap;
-            src: url(https://radio.ericade.net/wp-content/fonts/open-sans/memSYaGs126MiZpBA-UvWbX2vVnXBbObj2OVZyOOSr4dVJWUgsg-1x4vaVQUwaEQXjN_mQ.woff) format('woff');
-            unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+1EA0-1EF9, U+20AB;
-        }
-
-        /* latin-ext */
-        @font-face {
-            font-family: 'Open Sans';
-            font-style: normal;
-            font-weight: 700;
-            font-stretch: normal;
-            font-display: swap;
-            src: url(https://radio.ericade.net/wp-content/fonts/open-sans/memSYaGs126MiZpBA-UvWbX2vVnXBbObj2OVZyOOSr4dVJWUgsg-1x4uaVQUwaEQXjN_mQ.woff) format('woff');
-            unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
-        }
-
-        /* latin */
-        @font-face {
-            font-family: 'Open Sans';
-            font-style: normal;
-            font-weight: 700;
-            font-stretch: normal;
-            font-display: swap;
-            src: url(https://radio.ericade.net/wp-content/fonts/open-sans/memSYaGs126MiZpBA-UvWbX2vVnXBbObj2OVZyOOSr4dVJWUgsg-1x4gaVQUwaEQXjM.woff) format('woff');
-            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-        }
-
-        /* devanagari */
-        @font-face {
-            font-family: 'Khand';
-            font-style: normal;
-            font-weight: 500;
-            font-display: swap;
-            src: url(https://radio.ericade.net/wp-content/fonts/khand/TwMN-IINQlQQ0bKhcWExbQGl_O-D5hw.woff) format('woff');
-            unicode-range: U+0900-097F, U+1CD0-1CF6, U+1CF8-1CF9, U+200C-200D, U+20A8, U+20B9, U+25CC, U+A830-A839, U+A8E0-A8FB;
-        }
-
-        /* latin-ext */
-        @font-face {
-            font-family: 'Khand';
-            font-style: normal;
-            font-weight: 500;
-            font-display: swap;
-            src: url(https://radio.ericade.net/wp-content/fonts/khand/TwMN-IINQlQQ0bKhcWE-bQGl_O-D5hw.woff) format('woff');
-            unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
-        }
-
-        /* latin */
-        @font-face {
-            font-family: 'Khand';
-            font-style: normal;
-            font-weight: 500;
-            font-display: swap;
-            src: url(https://radio.ericade.net/wp-content/fonts/khand/TwMN-IINQlQQ0bKhcWEwbQGl_O-D.woff) format('woff');
-            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-        }
+ 
     </style>
 
     <script>
@@ -519,7 +315,7 @@
         function getrequeststats() {
 
             var client = new HttpClient();
-            client.get('/radiodb/get-token/', function (response) {
+            client.get('/get-token/', function (response) {
                 var z = "";
                 var xhttp = new XMLHttpRequest();
                 xhttp.onreadystatechange = function () {
@@ -569,7 +365,7 @@
                     }
                 };
 
-                xhttp.open("POST", "https://api.ericade.net/radio/getrequeststats/", true);
+                xhttp.open("POST", "http://api.domain.tld/radio/getrequeststats/", true);
                 xhttp.send("{\"Password\":\"" + response + "\", \"StationID\":\"" + "1" + "\"}");
 
             });
@@ -582,7 +378,7 @@
             greeting = document.getElementById("greeting").value
 
             var client = new HttpClient();
-            client.get('/radiodb/get-token/', function (response) {
+            client.get('/get-token/', function (response) {
                 var xhttp = new XMLHttpRequest();
                 xhttp.onreadystatechange = function () {
 
@@ -598,7 +394,7 @@
                     }
                 };
 
-                xhttp.open("POST", "https://api.ericade.net/radio/addrequest/", true);
+                xhttp.open("POST", "http://api.domain.tld/radio/addrequest/", true);
                 xhttp.send("{\"Password\":\"" + response + "\", \"TrackID\":\"" + TrackID + "\", \"StationID\":\"" + "1" + "\", \"Requester\":\"" + requester + "\", \"Source\": \"Internet\", \"Greeting\":\"" + greeting + "\"}");
 
             });
@@ -642,7 +438,7 @@
             if (search == "") { document.getElementById("searchres").innerHTML = "<option value=\"0\">-</option>"; } else {
 
                 var client = new HttpClient();
-                client.get('/radiodb/get-token/', function (response) {
+                client.get('/get-token/', function (response) {
 
                     var xhttp = new XMLHttpRequest();
                     var searchresponse = "";
@@ -702,7 +498,7 @@
 
                     };
 
-                    xhttp.open("POST", "https://api.ericade.net/radio/gettrack/", true);
+                    xhttp.open("POST", "http://api.domain.tld/radio/gettrack/", true);
                     xhttp.send("{\"Password\":\"" + response + "\", \"Search\":\"" + search + "\", \"SimpleSearch\":\"1\", \"StationID\":\"1\", \"EligibilityFilter\":\"0\", \"ReturnArtistDescription\":\"0\", \"ReturnArtistLongDescription\":\"0\"}");
 
                 });

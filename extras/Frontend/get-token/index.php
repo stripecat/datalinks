@@ -16,14 +16,14 @@ else
 }
 
 require $sroot.'config.php';
-#require $sroot.'inc/security.php';
-require $sroot.'inc/functions.php';
+include_once $sroot.'inc/security.php';
+include_once $sroot.'inc/functions.php';
 
 /* echo "{";
 echo "\"jwt\":\"".Generate_JWT_Token()."\"";
 echo "}"; */
 
-$jwtraw=Generate_JWT_Token();
+$jwtraw=Generate_JWT_Token("GENERAL","ANY",$_SESSION);
 $jwtjson=json_decode($jwtraw);
 
 $jwt=$jwtjson->jwt;
