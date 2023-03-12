@@ -29,8 +29,8 @@ $LogDir = $InitDir + "\Logs\"
 $Temp_dir = $InitDir + "\Temporary"
 $ReqID=$Destination_dir + "\templatefiles\intreq.mp3"
 $Slots=2
-$Password="<password>"
-$Domain="https://api.ericade.net"
+$Password="cdE#4rFVbgT%"
+$Domain="http://api.domain.tld"
 $logfilefull=($LogDir + "RequestLoader_" + (Get-Date -Format "yyyy-MM-dd-HH-mm") + ".log")
 
 #----------------[ Functions ]------------------------------------------------------
@@ -104,7 +104,7 @@ for ($num = 1 ; $num -lt $Slots+1 ; $num++)
 
 #if (($clockposition -ge 9 -and $clockposition -lt 30) -or ($clockposition -ge 39 -and $clockposition -le 59))
 
-if (($clockposition -ne 9) -and ($clockposition -ne 39))
+if (($clockposition -ne 9) -and ($clockposition -ne 36))
 {
    #logwrite("Script is running at minute " + $clockposition + " and is now under curfew. No actions will be taken at this time.")
     exit

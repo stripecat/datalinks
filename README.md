@@ -140,16 +140,18 @@ Please go to the main server for PlayIt Live.
 
 Next up is the requestloader. It´s a Powershell script, that will check if there are any files to play and also notify the API that a song have been added to the slot. There are two slots, so every hour allows for two requests. It´s ill-adviced to try to use more than 2. Also it´s not supported, so you will have to program that yourself to make it work.
 
-Install the webserver-role on the main server for PlayIt Live. This will only be used by PlayIt Live, so it should not be set to listen on any ip-adress other than 127.0.0.1.
-
 C:\ezdatalinks\ is the root path.
 Copy the file requestloader.ps1 (From folder called "Powershell") to the PIL broadcast-machine under C:\ezdatalinks\, then open it there to edit:
 
 Make sure $Destination_dir is set to "C:\ezdatalinks\RequestLoader".
 
- Download the latest version of FFMPEG from here (https://www.gyan.dev/ffmpeg/builds/). Put it in the "C:\ezdatalinks\"
+If you haven't run script on this server, execution may be prohibited. If so, open a Powershell-prompt in administrative mode and run this command "set-executionpolicy remotesigned".
 
-Go to C:\ezdatalinks\request and create a directory called templatefiles. Put the announcing ident ("You are listening to KRUD 95.7, here is a request from a listener") under it and call it intreq.mp3.
+Download the latest version of FFMPEG from here (https://www.gyan.dev/ffmpeg/builds/). To be more specific: the package called ffmpeg-git-essentials.7z. Unpack it and just put ffmpeg.exe in the "C:\ezdatalinks\" folder. None of the other files are necessary. 
+
+Run the script once to create all necessary folders.
+
+Go to C:\ezdatalinks\request and create a directory called templatefiles under c:\ezdatalinks\request. Put a stationid announcing the request under it and call it intreq.mp3. I have supplied you with one that you can experiment with, to see that it works. 
 
 The script needs to run once per minute. It will the do housekeeping or load the next waiting request. At start, it checks the minute. If it's 9 or 39 minutes past the hour, it will check with the API to see if there is a request to play. If the api responds with pending request, it will create a file in "C:\ezdatalinks\request" called slotx.wav. Requests playing a 10 past the hour are bound to "slot1" and those playing at 40 minutes past the hour are called "slot2". The file is thus either slot1.wav or slot2.wav.
 
@@ -174,5 +176,5 @@ With this the backend is setup properly.
 
 # Web frontend
 
-The front end needs the ticket generator and code. Those are located under the folder "Extras/Frontend" in the package.
+The front end needs the ticket generator and code. Those are located under the folder "Extras/Frontend" in the package. Upload the structure to your frontend. Request.php is the page that you use to request tunes. It's rather raw, so you can use it with your own CSS-structure.
 
