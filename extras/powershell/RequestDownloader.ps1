@@ -104,7 +104,7 @@ for ($num = 1 ; $num -lt $Slots+1 ; $num++)
 
 #if (($clockposition -ge 9 -and $clockposition -lt 30) -or ($clockposition -ge 39 -and $clockposition -le 59))
 
-if (($clockposition -ne 9) -and ($clockposition -ne 36))
+if (($clockposition -ne 9) -and ($clockposition -ne 53))
 {
    #logwrite("Script is running at minute " + $clockposition + " and is now under curfew. No actions will be taken at this time.")
     exit
@@ -163,7 +163,8 @@ $washedartist=$NextSong.Requests[0].Fullartist|Foreach-Object {
     $_ -replace '&#37;3A', ':' `
        -replace '&#37;5C', '\' `
        -replace '&#37;20', ' ' `
-       -replace '&#37;C3&#37;B6', 'ö'
+       -replace '&#37;C3&#37;B6', 'Ã¶' `
+       -replace '&#37;', '&'
 
     } 
 
@@ -171,7 +172,7 @@ $washedtitle=$NextSong.Requests[0].Title|Foreach-Object {
     $_ -replace '&#37;3A', ':' `
        -replace '&#37;5C', '\' `
        -replace '&#37;20', ' ' `
-       -replace '&#37;C3&#37;B6', 'ö'
+       -replace '&#37;C3&#37;B6', 'Ã¶'
     } 
 
 $ToPlay=($washedartist + " - " + $washedtitle)
@@ -192,14 +193,11 @@ Logwrite("Now creating the playfile for slot " + $NextSlot + " to play " + $ToPl
 try
 {
 $sourcepath=$path|Foreach-Object {
-    $_ -replace '&#37;3A', ':' `
-       -replace '&#37;5C', '\' `
-       -replace '&#37;20', ' ' `
-       -replace '&#37;C3&#37;B6', 'ö'
+        $_ -replace '&#37;', '%'
     } 
+    $sourcepath=[System.Web.HttpUtility]::UrlDecode($sourcepath)
 
-
-$ReqFileFull="request"+$NextSlot+".wav"
+    $ReqFileFull="request"+$NextSlot+".wav"
 
     #gc "$ReqID","$sourcepath" -Encoding Byte -Read 512 | sc ($Destination_dir+"\"+$ReqFileFull) -Encoding Byte
 
