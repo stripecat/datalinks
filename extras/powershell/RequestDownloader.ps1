@@ -24,6 +24,7 @@
 $InitDir = "C:\ezdatalinks\RequestLoader" # Change this is you run the script in another structure than the directories.
 
 $ffmpeg_exe = "C:\ezdatalinks\ffmpeg.exe"
+$sox_exe = "C:\Scripts\sox\sox.exe"
 $Destination_dir = "C:\ezdatalinks\request"
 $LogDir = $InitDir + "\Logs\"
 $Temp_dir = $InitDir + "\Temporary"
@@ -201,8 +202,29 @@ $sourcepath=$path|Foreach-Object {
 
     #gc "$ReqID","$sourcepath" -Encoding Byte -Read 512 | sc ($Destination_dir+"\"+$ReqFileFull) -Encoding Byte
 
+        # Sox will fix the tune, so it will properly fade out. This will allow adding a StationID after the song.
+
+        $Trim = $CueIn # Cut off x seconds in the beginning (CUE IN)
+        $FADE_IN_L = "0" # Fade in from the new beginning
+        $FADE_OUT_L = "4" # Fade out from the end
+        $LENGTH = $CueOut # Fade point (CUE OUT)
+    
+        $out = ($Temp_dir + "\" + $ReqFileFull)
+        if (test-path $out) { remove-item $out -force -Confirm:$false }
+    
+        $cmdline = "$sox_exe `"$sourcepath`" `"" + $out + "`" trim " + $Trim + " fade " + $FADE_IN_L + " " + $LENGTH + " " + $FADE_OUT_L
+    
+        try {
+            logwrite("Command line: " + $cmdline + ".")
+            invoke-expression -command $cmdline
+        }
+        catch {
+            logwrite("[ERROR] Failed to create the file." + $_)
+            exit
+        }
+
     #$fromnames_all = ($ReqID + "|" + $sourcepath)
-    $cmdline =  "$ffmpeg_exe -i `"" + $ReqID + "`" -i `"" + $sourcepath + "`" -metadata title=`""+ $washedtitle + "`" -metadata artist=`"" + "Listener-request: " + $washedartist + "`" -filter_complex '[0:0][1:0]concat=n=2:v=0:a=1[out]' -map '[out]' `"" + ($Destination_dir+"\"+$ReqFileFull) + "`" "
+    $cmdline =  "$ffmpeg_exe -i `"" + $ReqID + "`" -i `"" + $out + "`" -metadata title=`""+ $washedtitle + "`" -metadata artist=`"" + "Listener-request: " + $washedartist + "`" -filter_complex '[0:0][1:0]concat=n=2:v=0:a=1[out]' -map '[out]' `"" + ($Destination_dir+"\"+$ReqFileFull) + "`" "
     #Write-Verbose "`t CMD: $cmdline"
 
 
