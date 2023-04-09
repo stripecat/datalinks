@@ -23,7 +23,7 @@ What you need
 - PHP 7.2 or better
 - A virtual host to run it on. (Not the same as the one you run the station web site on)
 - A MariaDB or MySQL instance.
-- DNS-name. Recommended: api.yourdomain.tld. (create it as a subdomain called api. If your station is called ericade.radio, then it must be api.ericade.net)
+- DNS-name. Recommended: api.yourdomain.tld. (create it as a subdomain called api. If your station is called ericade.radio, then it should be api.ericade.radio)
 - A busload of patience.
 
 # How it works
