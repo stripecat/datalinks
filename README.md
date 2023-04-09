@@ -178,13 +178,14 @@ You need to create two "Scheduled events" in playit live. They are there to look
 
 1. Create two empty files: C:\ezdatalinks\request\request1.wav and C:\ezdatalinks\request\request2.wav
 2. Go to PlayIt live and create a scheduled event.Call the first scheduled event "Play request from Internet - Slot 1"
-3. Make it run daily on every hour and at 09 minutes past the hour.
+3. Make it run daily on every hour and at 10 minutes past the hour.
 4. Click "Add action" (green plus sign in the bottom of the Scheduled event).
 5. Add action to "Insert track" and select From: File and point to the the filename C:\ezdatalinks\request\request1.wav.
    Remember that this file and the whole webserver is just for PlayIt live. The API and front should run on an Internet facing server.
 6. Call the second "Scheduled event" "Play request from Internet - Slot 2"
-7. Click "Add action" (green plus sign in the bottom of the Scheduled event).
-8. Add action to "Insert track" and select From: File and point to the the filename C:\ezdatalinks\request\request2.wav.
+7. Make it run daily on every hour and at 40 minutes past the hour.
+8. Click "Add action" (green plus sign in the bottom of the Scheduled event).
+9. Add action to "Insert track" and select From: File and point to the the filename C:\ezdatalinks\request\request2.wav.
 
 With this the backend is setup properly.
 
