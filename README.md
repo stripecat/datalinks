@@ -41,7 +41,7 @@ recommended you create a subdomain called api, so the API can be reached on api.
 
 If you have PlayIT Live running and a website for your station, you're probably already setup this way with two different servers.
 
-Running the frontend and the api on different computers is possible. But the computer using the api must have Maridb or mysql on the same maskin as the API. If you have them on different computers, you may get performance problems.
+Running the frontend and the api on different computers is possible. But the computer using the api must have Maridb or mysql on the same server as the API. If you have them on different computers, you may get performance problems.
 
 
 # The Internet facing API
