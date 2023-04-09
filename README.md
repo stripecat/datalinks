@@ -176,7 +176,7 @@ Set it to run with the Windows-account use to login when you run PlayIt Live.
 
 You need to create two "Scheduled events" in playit live. They are there to look after a requested tune. If there is no file, the events wont fire. This means that the playout will work as normal. One event should fire at 10 past the hour and the other one at 40 minutes past the hour.
 
-1. Create two empty files: C:\ezdatalinks\request\request1.wav and C:\ezdatalinks\request\request2.wav
+1. Make sure two files exist: C:\ezdatalinks\request\request1.wav and C:\ezdatalinks\request\request2.wav
 2. Go to PlayIt live and create a scheduled event.Call the first scheduled event "Play request from Internet - Slot 1"
 3. Make it run daily on every hour and at 10 minutes past the hour.
 4. Click "Add action" (green plus sign in the bottom of the Scheduled event).
