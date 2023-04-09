@@ -6,7 +6,7 @@ A backend database and request system for PlayIT Live.
 1. The user loads the page with the request form.
 2. The www-site returns the page. User types a name of an artist or song.
 3. The webbrowser first obtains a token from the www-site for the user and asks the api for a list matching the search. The token is then sent along with the request to the API.
-4. A list of song is sent back from the API.
+4. A list of songs is sent back from the API.
 5. The user selects the song and clicks the "request song"-button. The webbrowser then calls the API after obtaining a token by the www-site.
 The API either rejects the request or accepts it. On acceptance, it is put in the QueuedRequests table.
 6. On every hour at 9 and 39 minutes past the hour, the Powershellscript asks if there are any new requests in the queue. If a request exists it will be handled. The script merges an stationID (e.g. "This is a brand new request from an Internet user) with the song requested. When done, it instructs the API that the song has been put in the station.
@@ -15,7 +15,7 @@ The API either rejects the request or accepts it. On acceptance, it is put in th
 WARNING:
 This software is published "as is". I cannot provide support for it. It requires an intermediate skill in system administration and preferably some programming skills. Expect no "Next, next finish".
 
-It will take a while until the "web module" has a its excentricies ironed out. The shoutcast module is still in, even though I intend to remove it in the future.
+It will take a while until the "web module" has a its excentricies ironed out.
 
 What you need
 
