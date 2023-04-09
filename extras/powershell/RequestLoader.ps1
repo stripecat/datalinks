@@ -162,22 +162,17 @@ $CueIn = $NextSong.Requests[0].CueIn
 $CueOut = $NextSong.Requests[0].CueOut
 $duration = $NextSong.Requests[0].Duration
 
-
 $washedartist=$NextSong.Requests[0].Fullartist|Foreach-Object {
-    $_ -replace '&#37;3A', ':' `
-       -replace '&#37;5C', '\' `
-       -replace '&#37;20', ' ' `
-       -replace '&#37;C3&#37;B6', 'Ã¶' `
-       -replace '&#37;', '&'
-
+        $_ -replace '&#37;', '%'
     } 
+    $washedartist=[System.Web.HttpUtility]::UrlDecode($washedartist)
 
-$washedtitle=$NextSong.Requests[0].Title|Foreach-Object {
-    $_ -replace '&#37;3A', ':' `
-       -replace '&#37;5C', '\' `
-       -replace '&#37;20', ' ' `
-       -replace '&#37;C3&#37;B6', 'Ã¶'
+
+    $washedtitle=$NextSong.Requests[0].Title|Foreach-Object {
+        $_ -replace '&#37;', '%'
     } 
+    $washedtitle=[System.Web.HttpUtility]::UrlDecode($washedtitle)
+
 
 $ToPlay=($washedartist + " - " + $washedtitle)
 

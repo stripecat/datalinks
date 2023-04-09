@@ -141,7 +141,7 @@ Please go to the main server for PlayIt Live.
 Next up is the requestloader. It´s a Powershell script, that will check if there are any files to play and also notify the API that a song have been added to the slot. There are two slots, so every hour allows for two requests. It´s ill-adviced to try to use more than 2. Also it´s not supported, so you will have to program that yourself to make it work.
 
 C:\ezdatalinks\ is the root path.
-Copy the file requestloader.ps1 (From folder called "Powershell") to the PIL broadcast-machine under C:\ezdatalinks\, then open it there to edit:
+Copy the file RequestLoader.ps1 (From folder called "Powershell") to the PIL broadcast-machine under C:\ezdatalinks\, then open it there to edit:
 
 Make sure $Destination_dir is set to "C:\ezdatalinks\RequestLoader".
 
@@ -174,18 +174,18 @@ Set it to run with the Windows-account use to login when you run PlayIt Live.
 
 You need to create two "Scheduled events" in playit live. They are there to look after a requested tune. If there is no file, the events wont fire. This means that the playout will work as normal. One event should fire at 10 past the hour and the other one at 40 minutes past the hour.
 
-1. Call the first "Scheduled event" "Play request from Internet - Slot 1"
-2. Make it run daily on every hour and at 09 minutes past the hour.
-3. Click "Add action" (green plus sign in the bottom of the Scheduled event).
-4. Add action to "Insert track" and select From: File and point to the the filename C:\ezdatalinks\request\request1.wav.
+1. Create two empty files: C:\ezdatalinks\request\request1.wav and C:\ezdatalinks\request\request2.wav
+2. Go to PlayIt live and create a scheduled event.Call the first scheduled event "Play request from Internet - Slot 1"
+3. Make it run daily on every hour and at 09 minutes past the hour.
+4. Click "Add action" (green plus sign in the bottom of the Scheduled event).
+5. Add action to "Insert track" and select From: File and point to the the filename C:\ezdatalinks\request\request1.wav.
    Remember that this file and the whole webserver is just for PlayIt live. The API and front should run on an Internet facing server.
-5. Call the second "Scheduled event" "Play request from Internet - Slot 2"
-6. Click "Add action" (green plus sign in the bottom of the Scheduled event).
-7. Add action to "Insert track" and select From: File and point to the the filename C:\ezdatalinks\request\request2.wav.
+6. Call the second "Scheduled event" "Play request from Internet - Slot 2"
+7. Click "Add action" (green plus sign in the bottom of the Scheduled event).
+8. Add action to "Insert track" and select From: File and point to the the filename C:\ezdatalinks\request\request2.wav.
 
 With this the backend is setup properly.
 
 # Web frontend
 
 The front end needs the ticket generator and code. Those are located under the folder "Extras/Frontend" in the package. Upload the structure to your frontend. Request.php is the page that you use to request tunes. It's rather raw, so you can use it with your own CSS-structure.
-
