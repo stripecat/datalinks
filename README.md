@@ -153,7 +153,7 @@ Go to C:\ezdatalinks\request and create a directory called templatefiles under c
 
 The script needs to run once per minute. It will the do housekeeping or load the next waiting request. At start, it checks the minute. If it's 9 or 39 minutes past the hour, it will check with the API to see if there is a request to play. If the api responds with pending request, it will create a file in "C:\ezdatalinks\request" called slotx.wav. Requests playing a 10 past the hour are bound to "slot1" and those playing at 40 minutes past the hour are called "slot2". The file is thus either slot1.wav or slot2.wav.
 
-## Make sure the script runs every minuter (with Microsoft Task Scheduler)
+## Make sure the script runs every minute (with Microsoft Task Scheduler)
 
 ![scheduled task script](https://ericade.radio/assets/img/scheduler-ps.png)
 
@@ -164,6 +164,12 @@ Make sure it runs every minute of the hour.
 ![scheduled task time](https://ericade.radio/assets/img/scheduler.png)
 
 Set it to stop if its still running after an hour. This should not happen, but rather safe than sorry.
+
+![scheduled task time](https://ericade.radio/assets/img/scheduler-ps.png)
+
+Set it to run with the Windows-account use to login when you run PlayIt Live.
+
+![scheduled task credentials](https://ericade.radio/assets/img/scheduler-cred.png)
 
 # PlayIt Live
 
