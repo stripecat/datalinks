@@ -147,17 +147,17 @@ Make sure $Destination_dir is set to "C:\ezdatalinks\RequestLoader".
 
 If you haven't run script on this server, execution may be prohibited. If so, open a Powershell-prompt in administrative mode and run this command "set-executionpolicy remotesigned".
 
-Download the latest version of FFMPEG from here (https://www.gyan.dev/ffmpeg/builds/). To be more specific: the package called ffmpeg-git-essentials.7z. Unpack it and just put ffmpeg.exe in the "C:\ezdatalinks\" folder. None of the other files are necessary. 
-
 Run the script once to create all necessary folders.
 
 Go to C:\ezdatalinks\request and create a directory called templatefiles under c:\ezdatalinks\request. Put a stationid announcing the request under it and call it intreq.mp3. I have supplied you with one that you can experiment with, to see that it works. 
 
 The script needs to run once per minute. It will the do housekeeping or load the next waiting request. At start, it checks the minute. If it's 9 or 39 minutes past the hour, it will check with the API to see if there is a request to play. If the api responds with pending request, it will create a file in "C:\ezdatalinks\request" called slotx.wav. Requests playing a 10 past the hour are bound to "slot1" and those playing at 40 minutes past the hour are called "slot2". The file is thus either slot1.wav or slot2.wav.
 
-Next, create a scheduled task and call it "RequestLoader". Make it run the script %SystemRoot%\system32\WindowsPowerShell\v1.0\powershell.exe and this as the arguments -NoProfile -NoLogo -NonInteractive -ExecutionPolicy Bypass -File "C:\ezdatalinks\RequestLoader.ps1" 
+Next, create a scheduled task and call it "RequestLoader". Make it run the script %SystemRoot%\system32\WindowsPowerShell\v1.0\powershell.exe and this as the arguments -NoProfile -NoLogo -NonInteractive -ExecutionPolicy Bypass -File "C:\ezdatalinks\RequestLoader.ps1". Make sure it runs every minute of the hour.
 
-Set it to stop if its still running after and hour. This should not happen, but rather safe than sorry.
+![scheduled task](https://ericade.radio/assets/img/scheduler.png)
+
+Set it to stop if its still running after an hour. This should not happen, but rather safe than sorry.
 
 # PlayIt Live
 

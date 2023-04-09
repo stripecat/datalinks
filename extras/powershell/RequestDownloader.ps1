@@ -24,7 +24,7 @@
 $InitDir = "C:\ezdatalinks\RequestLoader" # Change this is you run the script in another structure than the directories.
 
 $ffmpeg_exe = "C:\ezdatalinks\ffmpeg.exe"
-$sox_exe = "C:\Scripts\sox\sox.exe"
+$sox_exe = "C:\ezdatalinks\sox.exe"
 $Destination_dir = "C:\ezdatalinks\request"
 $LogDir = $InitDir + "\Logs\"
 $Temp_dir = $InitDir + "\Temporary"
@@ -105,7 +105,7 @@ for ($num = 1 ; $num -lt $Slots+1 ; $num++)
 
 #if (($clockposition -ge 9 -and $clockposition -lt 30) -or ($clockposition -ge 39 -and $clockposition -le 59))
 
-if (($clockposition -ne 9) -and ($clockposition -ne 53))
+if (($clockposition -ne 9) -and ($clockposition -ne 39 ))
 {
    #logwrite("Script is running at minute " + $clockposition + " and is now under curfew. No actions will be taken at this time.")
     exit
@@ -158,6 +158,9 @@ $StationID=$NextSong.Requests[0].StationID
 $Path=$NextSong.Requests[0].Path
 $nameofrequester=$NextSong.Requests[0].nameofrequester
 $greeting=$NextSong.Requests[0].greeting
+$CueIn = $NextSong.Requests[0].CueIn
+$CueOut = $NextSong.Requests[0].CueOut
+$duration = $NextSong.Requests[0].Duration
 
 
 $washedartist=$NextSong.Requests[0].Fullartist|Foreach-Object {
