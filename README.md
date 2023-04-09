@@ -15,15 +15,15 @@ The API either rejects the request or accepts it. On acceptance, it is put in th
 WARNING:
 This software is published "as is". I cannot provide support for it. It requires an intermediate skill in system administration and preferably some programming skills. Expect no "Next, next finish".
 
-I have a very long time to go before this "web module" has a its excentricies ironed out. The shoutcast module is still in, even though I intend to remove it in the future.
+It will take a while until the "web module" has a its excentricies ironed out. The shoutcast module is still in, even though I intend to remove it in the future.
 
 What you need
 
 - A Linux box (Ubuntu recommended)
 - PHP 7.2 or better
-- A virtual host to run it on.
+- A virtual host to run it on. (Not the same as the one you run the station web site on)
 - A MariaDB or MySQL instance.
-- DNS-name. Recommended: api.yourdomain.com.
+- DNS-name. Recommended: api.yourdomain.tld. (create it as a subdomain called api. If your station is called ericade.radio, then it must be api.ericade.net)
 - A busload of patience.
 
 # How it works
@@ -124,11 +124,11 @@ Please make sure the password you use for the API-calls and for the database are
 }
 ```
 
-Set it up to send this to the API-endpoint (api.youdomain.tld/radio/updatetrack/). This field is called "URL:".
+Set it up to send this to the API-endpoint (api.yourdomain.tld/radio/updatetrack/). This field is called "URL:".
 
 The PlayIt live machine and the EZDataLinks do not (should not) have to be the same. Running the API on Windows should be possible, but is not recommended. I run the base plaform on Windows 11 and my original version of EZDataLinks runs on a Linux box under Hyper-V.
 
-Please note that running the radio www-page and the API on the same machine is probably the best solution. Remember that machine needs to have MariaDB or MySQL.
+Please note that running the radio www-page and the API on the same machine but as different VHOSTs is probably the best solution. Remember that machine needs to have MariaDB or MySQL.
 
 Now test that the database is filling up with songs from the station.
 
@@ -138,20 +138,22 @@ Location: the server running PlayIt Live.
 
 Please go to the main server for PlayIt Live. 
 
-Next up is the requestloader. It´s a Powershell script, that will check if there are any files to play and also notify the API that a song have been added to the slot. There are two slots, so every hour allows for two requests. It´s ill-adviced to try to use more than 2. Also it´s not supported, so you will have to program that yourself to make it work.
+Next up is the requestloader. It´s a Powershell script, that will check if there are any files to play and also notify the API that a song have been added to the slot. There are two slots, so every hour allows for two requests. It´s ill-adviced to try to use more than 2. Also it´s not supported, so it will need some extra coding to work.
 
 C:\ezdatalinks\ is the root path.
-Copy the file RequestLoader.ps1 (From folder called "Powershell") to the PIL broadcast-machine under C:\ezdatalinks\, then open it there to edit:
+Copy the file the folder ezdatalinks (From the folder called "Extras") to the PIL broadcast-machine so it becomes C:\ezdatalinks\.
+
+Now open C:\ezdatalinks\RequestLoader.ps1.
 
 Make sure $Destination_dir is set to "C:\ezdatalinks\RequestLoader".
 
-If you haven't run script on this server, execution may be prohibited. If so, open a Powershell-prompt in administrative mode and run this command "set-executionpolicy remotesigned".
+If you haven't run scripts on this server, execution may be prohibited. If so, open a Powershell-prompt in administrative mode and run this command "set-executionpolicy remotesigned".
 
 Run the script once to create all necessary folders.
 
-Go to C:\ezdatalinks\request and create a directory called templatefiles under c:\ezdatalinks\request. Put a stationid announcing the request under it and call it intreq.mp3. I have supplied you with one that you can experiment with, to see that it works. 
+Under c:\ezdatalinks\request\templatefiles you will find the file intreq.mp3. That is the station id that will play before the requested song. Please replace that with your own stationid. The one provided is for my station. You can experiment with it will testing that everything works.
 
-The script needs to run once per minute. It will the do housekeeping or load the next waiting request. At start, it checks the minute. If it's 9 or 39 minutes past the hour, it will check with the API to see if there is a request to play. If the api responds with pending request, it will create a file in "C:\ezdatalinks\request" called slotx.wav. Requests playing a 10 past the hour are bound to "slot1" and those playing at 40 minutes past the hour are called "slot2". The file is thus either slot1.wav or slot2.wav.
+The script needs to run once per minute. It will the do housekeeping or load the next waiting request. At start, it checks the minute. If it's 9 or 39 minutes past the hour, it will check with the API to see if there is a request to play. If the api responds with pending request, it will create a file in "C:\ezdatalinks\request" called requestx.wav. Requests playing a 10 past the hour are bound to "slot1" and those playing at 40 minutes past the hour are called "request2". The file is thus either request1.wav or request2.wav.
 
 ## Make sure the script runs every minute (with Microsoft Task Scheduler)
 

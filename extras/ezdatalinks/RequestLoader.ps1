@@ -160,7 +160,7 @@ $nameofrequester=$NextSong.Requests[0].nameofrequester
 $greeting=$NextSong.Requests[0].greeting
 $CueIn = $NextSong.Requests[0].CueIn
 $CueOut = $NextSong.Requests[0].CueOut
-$duration = $NextSong.Requests[0].Duration
+#$duration = $NextSong.Requests[0].Duration
 
 $washedartist=$NextSong.Requests[0].Fullartist|Foreach-Object {
         $_ -replace '&#37;', '%'
