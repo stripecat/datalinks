@@ -155,17 +155,16 @@ The script needs to run once per minute. It will the do housekeeping or load the
 
 ## Make sure the script runs every minute (with Microsoft Task Scheduler)
 
-![scheduled task script](https://ericade.radio/assets/img/scheduler-ps.png)
-
-Next, create a scheduled task and call it "RequestLoader". Make it run the script %SystemRoot%\system32\WindowsPowerShell\v1.0\powershell.exe and this as the arguments -NoProfile -NoLogo -NonInteractive -ExecutionPolicy Bypass -File "C:\ezdatalinks\RequestLoader.ps1". 
-
+Create a scheduled task and call it "RequestLoader". 
 Make sure it runs every minute of the hour.
 
 ![scheduled task time](https://ericade.radio/assets/img/scheduler.png)
 
-Set it to stop if its still running after an hour. This should not happen, but rather safe than sorry.
+Make it run the script %SystemRoot%\system32\WindowsPowerShell\v1.0\powershell.exe and this as the arguments -NoProfile -NoLogo -NonInteractive -ExecutionPolicy Bypass -File "C:\ezdatalinks\RequestLoader.ps1". 
 
-![scheduled task time](https://ericade.radio/assets/img/scheduler-ps.png)
+![scheduled task script](https://ericade.radio/assets/img/scheduler-ps.png)
+
+Set it to stop if its still running after an hour. This should not happen, but rather safe than sorry.
 
 Set it to run with the Windows-account use to login when you run PlayIt Live.
 
